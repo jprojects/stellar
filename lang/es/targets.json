@@ -1,0 +1,59 @@
+{
+  "title": "Objetivos",
+  "description": "Webs y aplicaciones que analiza Stellar",
+  "fields": {
+    "id": "ID",
+    "name": "Nombre",
+    "kind": "Tipo",
+    "active": "Activo",
+    "url": "Dirección de la web",
+    "code_path": "Carpeta del código en el servidor",
+    "code_zip": "O bien un .zip con el código",
+    "owner": "Cliente o responsable",
+    "authorized": "Autorizado",
+    "notes": "Notas",
+    "last_score": "Puntuación",
+    "last_scan_at": "Último análisis",
+    "last_scan_id": "Núm. análisis",
+    "created_at": "Creado",
+    "where": "Dónde"
+  },
+  "kind": {
+    "web": "Web",
+    "code": "Código"
+  },
+  "placeholders": {
+    "url": "https://www.ejemplo.es",
+    "code_path": "/home/usuario/Projects/aplicacion"
+  },
+  "help": {
+    "url": "La portada de la web. Se analiza desde fuera, sin iniciar sesión y sin hacer daño.",
+    "code_path": "Tiene que estar dentro de las carpetas permitidas ('code_roots' de la configuración).",
+    "code_zip": "Si el código no está en el servidor de Stellar. Se descomprime, se analiza y se borra.",
+    "authorized": "Confirmo que esta web o este código es nuestro o tenemos permiso por escrito para analizarlo. Sin esta marca no se analiza."
+  },
+  "sections": {
+    "target": "Qué se analiza",
+    "authorization": "Responsable y autorización",
+    "last": "Último análisis"
+  },
+  "actions": {
+    "scan": "Analizar",
+    "report": "Informe"
+  },
+  "perm": {
+    "scan": "Analizar"
+  },
+  "confirm": {
+    "scan": "Se analizará ahora. Una web puede tardar un minuto; el código, según el tamaño. ¿Continuar?"
+  },
+  "flash": {
+    "scanned": "Análisis hecho: {score}/100.",
+    "scan_failed": "No se ha podido hacer el análisis."
+  },
+  "errors": {
+    "url_required": "Falta la dirección de la web.",
+    "url_invalid": "La dirección de la web no es válida.",
+    "source_required": "Indica la carpeta del código o sube un .zip."
+  }
+}

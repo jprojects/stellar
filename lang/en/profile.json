@@ -1,0 +1,75 @@
+{
+  "title": "My profile",
+  "fields": {
+    "name": "Name",
+    "email": "Email",
+    "locale": "Language",
+    "two_factor": "Two-step verification by email",
+    "current_password": "Current password",
+    "new_password": "New password",
+    "new_password_confirm": "Repeat new password",
+    "notify_email": "Email notifications"
+  },
+  "sections": {
+    "personal": "Personal details",
+    "security": "Security",
+    "password": "Password"
+  },
+  "help": {
+    "two_factor": "When signing in we will ask for a code sent to your email.",
+    "current_password": "Required to change your email or password, or to turn off verification.",
+    "password_section": "Leave blank if you do not want to change your password.",
+    "notify_email": "Notifications always appear in the bell on the top bar."
+  },
+  "two_factor_status": {
+    "required": "Two-step verification is mandatory: you will receive a code by email when signing in.",
+    "devices": "Trusted devices (no code required): {n}",
+    "forget": "Forget all",
+    "forget_confirm": "A code will be required next time on all your devices. Continue?"
+  },
+  "info": {
+    "username": "Username: {username}",
+    "last_login": "last login {date}"
+  },
+  "errors": {
+    "current_required": "Enter your current password to confirm the change",
+    "current_wrong": "Current password is not correct",
+    "mismatch": "Passwords do not match",
+    "email_2fa": "An email address is required for two-step verification"
+  },
+  "flash": {
+    "saved": "Profile updated",
+    "devices_forgotten": "A code will be required on all your devices"
+  },
+  "notify": {
+    "instant": "Receive them immediately",
+    "off": "Do not receive email notifications"
+  },
+  "api": {
+    "title": "Apps and API",
+    "intro": "A token lets an app or a bot (e.g. a Telegram bot) work on your behalf, with your same permissions. Treat it like a password. API address: {url}",
+    "token": "Token",
+    "created": "Copy this token now: you won't see it again.",
+    "name": "Name",
+    "name_placeholder": "e.g. Telegram bot",
+    "created_at": "Created",
+    "last_used": "Last used",
+    "expires": "Expires",
+    "never": "Never",
+    "days_30": "In 30 days",
+    "days_90": "In 90 days",
+    "days_365": "In a year",
+    "create": "Create a token",
+    "revoke": "Revoke",
+    "revoke_confirm": "The app or bot using “{name}” will stop working. Continue?",
+    "revoked": "Token revoked"
+  },
+  "google": {
+    "title": "Google Calendar",
+    "intro": "Connect your Google Calendar so the Agenda shows your events (read only). Your team mates will also see it in the Agenda; private events only as “Busy”.",
+    "connect": "Connect my Google Calendar",
+    "connected_as": "Connected as {email} since {date}",
+    "disconnect": "Disconnect",
+    "disconnect_confirm": "The Agenda will stop showing your calendar. Continue?"
+  }
+}

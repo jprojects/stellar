@@ -1,0 +1,15 @@
+/* Stellar · aspecto propio sobre la plantilla default de Quasar: azul noche e índigo. Solo variables del tema. */
+:root {
+  --primary: #4f46e5;
+  --sidebar-bg: #0f1226;
+  --sidebar-text: #b9bfe0;
+  --sidebar-active: #22275a;
+  --sidebar-text-strong: #fff;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary: #818cf8;
+    --sidebar-bg: #0b0d1c;
+    --sidebar-active: #1d2150;
+  }
+}

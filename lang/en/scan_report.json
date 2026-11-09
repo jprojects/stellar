@@ -1,0 +1,39 @@
+{
+  "title": "Dashboard",
+  "description": "Security status of websites and applications",
+  "kpi": {
+    "targets": "active targets",
+    "critical": "critical findings",
+    "high": "high findings",
+    "medium": "medium findings",
+    "never": "never scanned"
+  },
+  "targets_heading": "Targets",
+  "new_target": "New target",
+  "no_targets": "There are no targets yet. Add a website or application to start.",
+  "col": {
+    "target": "Target",
+    "last": "Last scan"
+  },
+  "never": "Never",
+  "not_authorized": "not authorized",
+  "recent_heading": "Latest scans",
+  "see_all": "See all",
+  "scan_info": "Scan #{id} · {date} · {duration} s",
+  "new_count": "{n} new",
+  "fixed_count": "{n} fixed",
+  "history": "Score history",
+  "back": "Dashboard",
+  "target": "Target",
+  "manage_findings": "Manage findings",
+  "rescan": "Scan again",
+  "running": "The scan is still running.",
+  "claude_heading": "Report for Claude",
+  "copy": "Copy for Claude",
+  "copied": "Copied",
+  "download": "Download .md",
+  "claude_help": "Copy it and paste it into a new conversation on claude.ai (or Claude Code with the code open). It already includes the instructions to review each finding and propose changes. Keys and passwords found are masked.",
+  "findings_heading": "Open findings ({n})",
+  "closed_count": "{n} closed (fixed, accepted or false positives)",
+  "mark": "Mark"
+}

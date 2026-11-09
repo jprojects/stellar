@@ -1,0 +1,10 @@
+{
+  "title": "Calendari",
+  "description": "Activitats per mes, setmana o dia",
+  "no_access": "No tens permís per veure les activitats",
+  "cal": {
+    "new": "Nova activitat",
+    "add_on": "Nova activitat el {date}",
+    "empty": "No hi ha activitats en aquest període"
+  }
+}

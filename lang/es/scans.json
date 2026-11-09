@@ -1,0 +1,37 @@
+{
+  "title": "Análisis",
+  "description": "Historial de todos los análisis",
+  "fields": {
+    "id": "Núm.",
+    "target_id": "Objetivo",
+    "kind": "Tipo",
+    "status": "Estado",
+    "score": "Puntuación",
+    "critical": "Críticas",
+    "high": "Altas",
+    "medium": "Medias",
+    "low": "Bajas",
+    "info": "Info",
+    "new_count": "Nuevos",
+    "fixed_count": "Resueltos",
+    "requests": "Peticiones",
+    "duration": "Duración (s)",
+    "error": "Error",
+    "user_id": "Lanzado por",
+    "started_at": "Inicio",
+    "finished_at": "Fin"
+  },
+  "status": {
+    "running": "En curso",
+    "done": "Hecho",
+    "failed": "Ha fallado"
+  },
+  "sections": {
+    "scan": "Análisis",
+    "counts": "Recuentos"
+  },
+  "actions": {
+    "report": "Informe",
+    "findings": "Hallazgos"
+  }
+}

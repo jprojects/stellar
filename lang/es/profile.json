@@ -1,0 +1,75 @@
+{
+  "title": "Mi perfil",
+  "fields": {
+    "name": "Nombre",
+    "email": "Email",
+    "locale": "Idioma",
+    "two_factor": "Verificación en dos pasos por email",
+    "current_password": "Contraseña actual",
+    "new_password": "Nueva contraseña",
+    "new_password_confirm": "Repite la nueva contraseña",
+    "notify_email": "Avisos por correo electrónico"
+  },
+  "sections": {
+    "personal": "Datos personales",
+    "security": "Seguridad",
+    "password": "Contraseña"
+  },
+  "help": {
+    "two_factor": "Al iniciar sesión te pediremos un código que te enviaremos por email.",
+    "current_password": "Necesaria para cambiar el email, la contraseña o desactivar la verificación.",
+    "password_section": "Déjalo en blanco si no quieres cambiar la contraseña.",
+    "notify_email": "Los avisos siempre aparecen en la campana de la barra superior."
+  },
+  "two_factor_status": {
+    "required": "La verificación en dos pasos es obligatoria: al iniciar sesión recibirás un código en tu email.",
+    "devices": "Dispositivos de confianza (no piden código): {n}",
+    "forget": "Olvidar todos",
+    "forget_confirm": "Se pedirá el código la próxima vez en todos tus dispositivos. ¿Continuar?"
+  },
+  "info": {
+    "username": "Usuario: {username}",
+    "last_login": "último acceso {date}"
+  },
+  "errors": {
+    "current_required": "Introduce tu contraseña actual para confirmar el cambio",
+    "current_wrong": "La contraseña actual no es correcta",
+    "mismatch": "Las contraseñas no coinciden",
+    "email_2fa": "El email es necesario para la verificación en dos pasos"
+  },
+  "flash": {
+    "saved": "Perfil actualizado",
+    "devices_forgotten": "Se pedirá el código en todos tus dispositivos"
+  },
+  "notify": {
+    "instant": "Recibirlos al momento",
+    "off": "No recibir avisos por correo"
+  },
+  "api": {
+    "title": "Aplicaciones y API",
+    "intro": "Un token permite que una app o un bot (p. ej. de Telegram) trabaje en tu nombre, con tus mismos permisos. Trátalo como una contraseña. Dirección de la API: {url}",
+    "token": "Token",
+    "created": "Copia este token ahora: no lo volverás a ver.",
+    "name": "Nombre",
+    "name_placeholder": "p. ej. Bot de Telegram",
+    "created_at": "Creado",
+    "last_used": "Último uso",
+    "expires": "Caduca",
+    "never": "Nunca",
+    "days_30": "Dentro de 30 días",
+    "days_90": "Dentro de 90 días",
+    "days_365": "Dentro de un año",
+    "create": "Crear un token",
+    "revoke": "Revocar",
+    "revoke_confirm": "La app o el bot que use «{name}» dejará de funcionar. ¿Quieres continuar?",
+    "revoked": "Token revocado"
+  },
+  "google": {
+    "title": "Google Calendar",
+    "intro": "Conecta tu Google Calendar para que la Agenda muestre tus eventos (solo lectura). Los compañeros del equipo también lo podrán ver en la Agenda; los eventos privados, solo como «Ocupado».",
+    "connect": "Conectar mi Google Calendar",
+    "connected_as": "Conectado con {email} desde el {date}",
+    "disconnect": "Desconectar",
+    "disconnect_confirm": "La Agenda dejará de mostrar tu calendario. ¿Quieres continuar?"
+  }
+}

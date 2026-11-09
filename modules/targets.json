@@ -1,0 +1,72 @@
+{
+  "table": "targets",
+  "primaryKey": "id",
+  "hooks": "Quasar\\Hooks\\TargetsHooks",
+  "actions": ["view", "create", "edit", "delete", "export", "scan"],
+  "recordTitle": "name",
+  "menu": { "group": "main", "order": 20, "icon": "crosshair" },
+
+  "fields": {
+    "id":           { "type": "number", "readonly": true, "grouping": false },
+    "name":         { "type": "text", "required": true, "maxlength": 150, "width": "half" },
+    "kind":         { "type": "select", "required": true, "default": "web", "width": "quarter",
+                      "options": { "web": "kind.web", "code": "kind.code" },
+                      "colors": { "web": "blue", "code": "purple" } },
+    "active":       { "type": "checkbox", "default": 1, "width": "quarter" },
+    "url":          { "type": "text", "maxlength": 500, "placeholder": "placeholders.url", "showon": "kind:web",
+                      "help": "help.url" },
+    "code_path":    { "type": "text", "maxlength": 500, "placeholder": "placeholders.code_path", "showon": "kind:code",
+                      "help": "help.code_path", "width": "half" },
+    "code_zip":     { "type": "media", "accept": [".zip", "application/zip"], "maxSize": "200M", "showon": "kind:code",
+                      "help": "help.code_zip", "width": "half" },
+    "owner":        { "type": "text", "maxlength": 150, "width": "half" },
+    "authorized":   { "type": "checkbox", "default": 0, "width": "half", "help": "help.authorized", "colors": { "0": "red" } },
+    "notes":        { "type": "textarea", "rows": 3, "maxlength": 4000 },
+    "last_score":   { "type": "number", "readonly": true, "width": "quarter" },
+    "last_scan_at": { "type": "datetime", "readonly": true, "width": "quarter" },
+    "last_scan_id": { "type": "number", "readonly": true, "grouping": false, "width": "quarter" },
+    "created_at":   { "type": "datetime", "readonly": true, "width": "quarter" },
+    "where":        { "type": "text", "sql": "COALESCE(NULLIF(targets.url, ''), NULLIF(targets.code_path, ''), (SELECT m.original_name FROM media m WHERE m.id = targets.code_zip))" }
+  },
+
+  "list": {
+    "columns": [
+      { "field": "name" },
+      { "field": "kind", "width": "90px" },
+      { "field": "where", "overflow": "wrap", "lines": 1 },
+      { "field": "owner", "width": "160px" },
+      { "field": "last_score", "width": "100px", "align": "right" },
+      { "field": "last_scan_at", "width": "150px" },
+      { "field": "authorized", "width": "90px" },
+      { "field": "active", "width": "70px" }
+    ],
+    "expand": ["notes"],
+    "defaultSort": { "field": "name", "dir": "asc" },
+    "pageSize": 25,
+    "search": ["name", "url", "code_path", "owner", "notes"],
+    "filters": [
+      { "field": "kind" },
+      { "field": "active" },
+      { "field": "authorized" },
+      { "field": "last_score", "operator": "between" }
+    ],
+    "rowActions": [
+      { "label": "actions.scan", "icon": "radar", "action": "scan", "confirm": "confirm.scan",
+        "showon": "authorized:1[AND]active:1", "access": { "permission": "scan" } },
+      { "label": "actions.report", "icon": "file-text", "url": "index.php?r=page&m=scan_report&target={id}", "showon": "last_scan_id!:" }
+    ]
+  },
+
+  "form": {
+    "buttons": [
+      { "label": "actions.scan", "icon": "radar", "action": "scan", "variant": "primary", "confirm": "confirm.scan",
+        "showon": "authorized:1[AND]active:1", "access": { "permission": "scan" } },
+      { "label": "actions.report", "icon": "file-text", "url": "index.php?r=page&m=scan_report&target={id}", "showon": "last_scan_id!:" }
+    ],
+    "sections": [
+      { "title": "sections.target", "fields": ["name", "kind", "active", "url", "code_path", "code_zip"] },
+      { "title": "sections.authorization", "fields": ["owner", "authorized", "notes"] },
+      { "title": "sections.last", "fields": ["last_score", "last_scan_at", "last_scan_id", "created_at"] }
+    ]
+  }
+}

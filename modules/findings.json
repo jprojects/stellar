@@ -1,0 +1,65 @@
+{
+  "table": "findings",
+  "primaryKey": "id",
+  "hooks": "Quasar\\Hooks\\FindingsHooks",
+  "actions": ["view", "edit", "export"],
+  "recordTitle": "title",
+  "menu": { "group": "main", "order": 40, "icon": "shield-alert" },
+
+  "fields": {
+    "id":          { "type": "number", "readonly": true, "grouping": false },
+    "scan_id":     { "type": "number", "readonly": true, "grouping": false, "width": "quarter" },
+    "target_id":   { "type": "select", "readonly": true, "width": "half", "search": true,
+                     "source": { "table": "targets", "value": "id", "label": "name", "order": "name" } },
+    "severity":    { "type": "select", "readonly": true, "width": "quarter",
+                     "options": { "critical": "scanner:severity.critical", "high": "scanner:severity.high", "medium": "scanner:severity.medium", "low": "scanner:severity.low", "info": "scanner:severity.info" },
+                     "colors": { "critical": "red", "high": "orange", "medium": "amber", "low": "blue", "info": "gray" } },
+    "status":      { "type": "select", "required": true, "width": "quarter",
+                     "options": { "open": "status.open", "fixed": "status.fixed", "accepted": "status.accepted", "false_positive": "status.false_positive" },
+                     "colors": { "open": "red", "fixed": "green", "accepted": "gray", "false_positive": "gray" } },
+    "category":    { "type": "select", "readonly": true, "width": "quarter",
+                     "options": { "web": "targets:kind.web", "code": "targets:kind.code" } },
+    "title":       { "type": "text", "readonly": true },
+    "location":    { "type": "text", "readonly": true },
+    "detail":      { "type": "textarea", "readonly": true, "rows": 3 },
+    "evidence":    { "type": "textarea", "readonly": true, "rows": 6 },
+    "fix":         { "type": "textarea", "readonly": true, "rows": 4 },
+    "cwe":         { "type": "text", "readonly": true, "width": "quarter" },
+    "check_id":    { "type": "text", "readonly": true, "width": "quarter" },
+    "is_new":      { "type": "checkbox", "readonly": true, "width": "quarter", "colors": { "1": "blue" } },
+    "comment":     { "type": "textarea", "rows": 3, "maxlength": 2000, "help": "help.comment" },
+    "created_at":  { "type": "datetime", "readonly": true, "width": "quarter" }
+  },
+
+  "list": {
+    "columns": [
+      { "field": "severity", "width": "110px" },
+      { "field": "title", "overflow": "wrap", "lines": 2 },
+      { "field": "target_id", "width": "180px" },
+      { "field": "location", "overflow": "wrap", "lines": 1 },
+      { "field": "status", "width": "130px" },
+      { "field": "is_new", "width": "70px" },
+      { "field": "scan_id", "width": "80px" }
+    ],
+    "expand": ["detail", "evidence", "fix", "comment"],
+    "defaultSort": { "field": "id", "dir": "desc" },
+    "pageSize": 50,
+    "search": ["title", "location", "evidence", "check_id"],
+    "filtersOpen": true,
+    "filters": [
+      { "field": "scan_id", "operator": "=" },
+      { "field": "target_id" },
+      { "field": "severity" },
+      { "field": "status" },
+      { "field": "category" },
+      { "field": "is_new" }
+    ]
+  },
+
+  "form": {
+    "sections": [
+      { "title": "sections.decision", "fields": ["status", "comment"] },
+      { "title": "sections.finding", "fields": ["title", "severity", "category", "target_id", "location", "detail", "evidence", "fix", "cwe", "check_id", "scan_id", "is_new", "created_at"] }
+    ]
+  }
+}

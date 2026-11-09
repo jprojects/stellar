@@ -1,0 +1,37 @@
+{
+  "title": "Scans",
+  "description": "History of all scans",
+  "fields": {
+    "id": "No.",
+    "target_id": "Target",
+    "kind": "Type",
+    "status": "Status",
+    "score": "Score",
+    "critical": "Critical",
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low",
+    "info": "Info",
+    "new_count": "New",
+    "fixed_count": "Fixed",
+    "requests": "Requests",
+    "duration": "Duration (s)",
+    "error": "Error",
+    "user_id": "Started by",
+    "started_at": "Started",
+    "finished_at": "Finished"
+  },
+  "status": {
+    "running": "Running",
+    "done": "Done",
+    "failed": "Failed"
+  },
+  "sections": {
+    "scan": "Scan",
+    "counts": "Counts"
+  },
+  "actions": {
+    "report": "Report",
+    "findings": "Findings"
+  }
+}

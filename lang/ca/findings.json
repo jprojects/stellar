@@ -1,0 +1,35 @@
+{
+  "title": "Troballes",
+  "description": "Problemes trobats. Marca els falsos positius i els riscos acceptats perquè no tornin a sortir a l'informe.",
+  "fields": {
+    "id": "ID",
+    "scan_id": "Anàlisi",
+    "target_id": "Objectiu",
+    "severity": "Gravetat",
+    "status": "Estat",
+    "category": "Tipus",
+    "title": "Troballa",
+    "location": "On",
+    "detail": "Què passa",
+    "evidence": "Prova",
+    "fix": "Com resoldre-ho",
+    "cwe": "CWE",
+    "check_id": "Control",
+    "is_new": "Nova",
+    "comment": "Nota",
+    "created_at": "Trobada"
+  },
+  "status": {
+    "open": "Oberta",
+    "fixed": "Resolta",
+    "accepted": "Risc acceptat",
+    "false_positive": "Fals positiu"
+  },
+  "help": {
+    "comment": "Per què és un fals positiu o per què s'accepta el risc. Surt a l'informe per a Claude."
+  },
+  "sections": {
+    "decision": "Decisió",
+    "finding": "Troballa"
+  }
+}

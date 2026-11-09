@@ -1,0 +1,10 @@
+{
+  "title": "Calendar",
+  "description": "Activities by month, week or day",
+  "no_access": "You are not allowed to see activities",
+  "cal": {
+    "new": "New activity",
+    "add_on": "New activity on {date}",
+    "empty": "No activities in this period"
+  }
+}

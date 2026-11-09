@@ -1,0 +1,73 @@
+{
+  "table": "scans",
+  "primaryKey": "id",
+  "actions": ["view", "delete", "export"],
+  "recordTitle": "id",
+  "menu": { "group": "main", "order": 30, "icon": "history" },
+
+  "fields": {
+    "id":          { "type": "number", "readonly": true, "grouping": false },
+    "target_id":   { "type": "select", "readonly": true, "width": "half", "search": true,
+                     "source": { "table": "targets", "value": "id", "label": "name", "order": "name" } },
+    "kind":        { "type": "select", "readonly": true, "width": "quarter",
+                     "options": { "web": "targets:kind.web", "code": "targets:kind.code" }, "colors": { "web": "blue", "code": "purple" } },
+    "status":      { "type": "select", "readonly": true, "width": "quarter",
+                     "options": { "running": "status.running", "done": "status.done", "failed": "status.failed" },
+                     "colors": { "running": "blue", "done": "green", "failed": "red" } },
+    "score":       { "type": "number", "readonly": true, "width": "quarter" },
+    "critical":    { "type": "number", "readonly": true, "width": "quarter" },
+    "high":        { "type": "number", "readonly": true, "width": "quarter" },
+    "medium":      { "type": "number", "readonly": true, "width": "quarter" },
+    "low":         { "type": "number", "readonly": true, "width": "quarter" },
+    "info":        { "type": "number", "readonly": true, "width": "quarter" },
+    "new_count":   { "type": "number", "readonly": true, "width": "quarter" },
+    "fixed_count": { "type": "number", "readonly": true, "width": "quarter" },
+    "requests":    { "type": "number", "readonly": true, "width": "quarter" },
+    "duration":    { "type": "number", "readonly": true, "width": "quarter" },
+    "error":       { "type": "textarea", "readonly": true, "rows": 2 },
+    "user_id":     { "type": "select", "readonly": true, "width": "half",
+                     "source": { "table": "users", "value": "id", "label": "name" } },
+    "started_at":  { "type": "datetime", "readonly": true, "width": "quarter" },
+    "finished_at": { "type": "datetime", "readonly": true, "width": "quarter" }
+  },
+
+  "list": {
+    "columns": [
+      { "field": "id", "width": "70px" },
+      { "field": "started_at", "width": "150px" },
+      "target_id",
+      { "field": "kind", "width": "90px" },
+      { "field": "status", "width": "110px" },
+      { "field": "score", "width": "90px", "align": "right" },
+      { "field": "critical", "width": "80px", "align": "right" },
+      { "field": "high", "width": "70px", "align": "right" },
+      { "field": "medium", "width": "80px", "align": "right" },
+      { "field": "low", "width": "70px", "align": "right" },
+      { "field": "new_count", "width": "80px", "align": "right" },
+      { "field": "fixed_count", "width": "90px", "align": "right" }
+    ],
+    "expand": ["error", "user_id", "requests", "duration"],
+    "defaultSort": { "field": "id", "dir": "desc" },
+    "pageSize": 25,
+    "filters": [
+      { "field": "target_id" },
+      { "field": "status" },
+      { "field": "kind" },
+      { "field": "started_at", "operator": "between" }
+    ],
+    "rowActions": [
+      { "label": "actions.report", "icon": "file-text", "url": "index.php?r=page&m=scan_report&id={id}", "showon": "status:done" },
+      { "label": "actions.findings", "icon": "list-checks", "url": "index.php?r=list&m=findings&f[scan_id]={id}", "showon": "status:done" }
+    ]
+  },
+
+  "form": {
+    "buttons": [
+      { "label": "actions.report", "icon": "file-text", "url": "index.php?r=page&m=scan_report&id={id}", "variant": "primary", "showon": "status:done" }
+    ],
+    "sections": [
+      { "title": "sections.scan", "fields": ["target_id", "kind", "status", "score", "started_at", "finished_at", "user_id", "error"] },
+      { "title": "sections.counts", "fields": ["critical", "high", "medium", "low", "info", "new_count", "fixed_count", "requests", "duration"] }
+    ]
+  }
+}

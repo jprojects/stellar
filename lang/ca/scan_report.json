@@ -1,0 +1,39 @@
+{
+  "title": "Tauler",
+  "description": "Estat de seguretat de les webs i aplicacions",
+  "kpi": {
+    "targets": "objectius actius",
+    "critical": "troballes crítiques",
+    "high": "troballes altes",
+    "medium": "troballes mitjanes",
+    "never": "sense analitzar"
+  },
+  "targets_heading": "Objectius",
+  "new_target": "Nou objectiu",
+  "no_targets": "Encara no hi ha cap objectiu. Afegeix una web o una aplicació per començar.",
+  "col": {
+    "target": "Objectiu",
+    "last": "Darrera anàlisi"
+  },
+  "never": "Mai",
+  "not_authorized": "sense autorització",
+  "recent_heading": "Darreres anàlisis",
+  "see_all": "Veure-les totes",
+  "scan_info": "Anàlisi #{id} · {date} · {duration} s",
+  "new_count": "{n} noves",
+  "fixed_count": "{n} resoltes",
+  "history": "Evolució de la puntuació",
+  "back": "Tauler",
+  "target": "Objectiu",
+  "manage_findings": "Gestiona les troballes",
+  "rescan": "Torna a analitzar",
+  "running": "L'anàlisi encara és en curs.",
+  "claude_heading": "Informe per a Claude",
+  "copy": "Copia per a Claude",
+  "copied": "Copiat",
+  "download": "Descarrega .md",
+  "claude_help": "Copia-ho i enganxa-ho en una conversa nova a claude.ai (o a Claude Code amb el codi obert). Ja porta les instruccions perquè revisi cada troballa i proposi els canvis. Les claus i contrasenyes trobades surten emmascarades.",
+  "findings_heading": "Troballes obertes ({n})",
+  "closed_count": "{n} tancades (resoltes, acceptades o falsos positius)",
+  "mark": "Marca"
+}

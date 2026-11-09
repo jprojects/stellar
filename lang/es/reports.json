@@ -1,0 +1,65 @@
+{
+  "title": "Informes",
+  "description": "Pide los datos que necesitas en lenguaje natural y descárgalos en Excel o PDF",
+  "perm": {
+    "ask": "Pedir a la IA",
+    "save": "Guardar"
+  },
+  "ask": {
+    "label": "¿Qué datos quieres?",
+    "placeholder": "Describe el informe, p. ej. «nombre y dirección de los clientes con alguna actividad este año, primero los VIP»",
+    "submit": "Generar informe"
+  },
+  "intro": "Escribe qué datos quieres ver. La IA prepara la consulta, te muestra qué ha entendido y el resultado, que puedes ordenar y descargar en Excel o PDF. Guarda los informes que uses a menudo.",
+  "intro_readonly": "Elige un informe guardado de la lista.",
+  "saved": "Informes guardados",
+  "saved_empty": "Todavía no hay ninguno.",
+  "recent": "Mis consultas recientes",
+  "sql": "Consulta SQL",
+  "save": "Guardar",
+  "rename": "Cambiar el nombre",
+  "save_name": "Nombre del informe",
+  "delete": "Eliminar el informe",
+  "confirm_delete": "¿Eliminar este informe?",
+  "name_required": "Escribe un nombre para el informe (máximo 150 caracteres).",
+  "not_understood": "No he podido convertir la petición en un informe. Prueba con otras palabras.",
+  "failed": "No se ha podido generar una consulta válida para esta petición. Prueba con otras palabras o con más detalle.",
+  "run_error": "Este informe no se ha podido ejecutar.",
+  "not_allowed": "Este informe usa datos que ya no están permitidos en los informes.",
+  "tabs": {
+    "table": "Tabla",
+    "chart": "Gráfico"
+  },
+  "chart": {
+    "type": "Tipo",
+    "types": {
+      "column": "Columnas",
+      "bar": "Barras",
+      "line": "Líneas",
+      "pie": "Circular"
+    },
+    "x": "Categorías",
+    "series": "Valores",
+    "save": "Guardar el gráfico",
+    "saved": "Gráfico guardado",
+    "download": "Descargar imagen",
+    "empty": "No hay datos para dibujar. Elige al menos un valor.",
+    "no_numeric": "Este informe no tiene columnas numéricas para dibujar un gráfico. Pide, por ejemplo, «número de clientes por país» o «actividades por mes este año».",
+    "other": "Otros",
+    "total": "Total",
+    "truncated": "El gráfico muestra las primeras {n} filas de {total}."
+  },
+  "comment": {
+    "title": "Comentario de la IA",
+    "button": "Comentar el informe",
+    "again": "Volver a comentar",
+    "intro": "La IA puede leer el resultado y destacar lo más importante: tendencias, máximos, concentraciones o valores raros.",
+    "generated": "Generado el {date} con los datos de ese momento",
+    "working": "La IA está analizando los datos…",
+    "failed": "No se ha podido comentar el informe. Vuelve a intentarlo."
+  },
+  "flash": {
+    "saved": "Informe guardado",
+    "deleted": "Informe eliminado"
+  }
+}

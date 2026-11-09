@@ -1,0 +1,59 @@
+{
+  "title": "Targets",
+  "description": "Websites and applications scanned by Stellar",
+  "fields": {
+    "id": "ID",
+    "name": "Name",
+    "kind": "Type",
+    "active": "Active",
+    "url": "Website address",
+    "code_path": "Code folder on the server",
+    "code_zip": "Or a .zip with the code",
+    "owner": "Client or owner",
+    "authorized": "Authorized",
+    "notes": "Notes",
+    "last_score": "Score",
+    "last_scan_at": "Last scan",
+    "last_scan_id": "Scan no.",
+    "created_at": "Created",
+    "where": "Where"
+  },
+  "kind": {
+    "web": "Website",
+    "code": "Code"
+  },
+  "placeholders": {
+    "url": "https://www.example.com",
+    "code_path": "/home/user/Projects/app"
+  },
+  "help": {
+    "url": "The site's home page. It is scanned from outside, unauthenticated and harmlessly.",
+    "code_path": "Must be inside the allowed folders ('code_roots' in the configuration).",
+    "code_zip": "If the code is not on the Stellar server. It is unzipped, scanned and deleted.",
+    "authorized": "I confirm this website or code is ours or we have written permission to scan it. Without this mark it is not scanned."
+  },
+  "sections": {
+    "target": "What is scanned",
+    "authorization": "Owner and authorization",
+    "last": "Last scan"
+  },
+  "actions": {
+    "scan": "Scan",
+    "report": "Report"
+  },
+  "perm": {
+    "scan": "Scan"
+  },
+  "confirm": {
+    "scan": "It will be scanned now. A website may take a minute; code, depending on size. Continue?"
+  },
+  "flash": {
+    "scanned": "Scan done: {score}/100.",
+    "scan_failed": "The scan could not be done."
+  },
+  "errors": {
+    "url_required": "The website address is required.",
+    "url_invalid": "The website address is not valid.",
+    "source_required": "Enter the code folder or upload a .zip."
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "title": "Panel",
+  "description": "Estado de seguridad de las webs y aplicaciones",
+  "kpi": {
+    "targets": "objetivos activos",
+    "critical": "hallazgos críticos",
+    "high": "hallazgos altos",
+    "medium": "hallazgos medios",
+    "never": "sin analizar"
+  },
+  "targets_heading": "Objetivos",
+  "new_target": "Nuevo objetivo",
+  "no_targets": "Aún no hay ningún objetivo. Añade una web o una aplicación para empezar.",
+  "col": {
+    "target": "Objetivo",
+    "last": "Último análisis"
+  },
+  "never": "Nunca",
+  "not_authorized": "sin autorización",
+  "recent_heading": "Últimos análisis",
+  "see_all": "Verlos todos",
+  "scan_info": "Análisis #{id} · {date} · {duration} s",
+  "new_count": "{n} nuevos",
+  "fixed_count": "{n} resueltos",
+  "history": "Evolución de la puntuación",
+  "back": "Panel",
+  "target": "Objetivo",
+  "manage_findings": "Gestionar los hallazgos",
+  "rescan": "Volver a analizar",
+  "running": "El análisis todavía está en curso.",
+  "claude_heading": "Informe para Claude",
+  "copy": "Copiar para Claude",
+  "copied": "Copiado",
+  "download": "Descargar .md",
+  "claude_help": "Cópialo y pégalo en una conversación nueva en claude.ai (o en Claude Code con el código abierto). Ya lleva las instrucciones para que revise cada hallazgo y proponga los cambios. Las claves y contraseñas encontradas salen enmascaradas.",
+  "findings_heading": "Hallazgos abiertos ({n})",
+  "closed_count": "{n} cerrados (resueltos, aceptados o falsos positivos)",
+  "mark": "Marcar"
+}

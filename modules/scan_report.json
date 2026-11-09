@@ -1,0 +1,5 @@
+{
+  "type": "page",
+  "controller": "Quasar\\Pages\\ScanReportPage",
+  "menu": { "group": "main", "order": 10, "icon": "radar" }
+}

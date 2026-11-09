@@ -1,0 +1,37 @@
+{
+  "title": "Anàlisis",
+  "description": "Historial de totes les anàlisis",
+  "fields": {
+    "id": "Núm.",
+    "target_id": "Objectiu",
+    "kind": "Tipus",
+    "status": "Estat",
+    "score": "Puntuació",
+    "critical": "Crítiques",
+    "high": "Altes",
+    "medium": "Mitjanes",
+    "low": "Baixes",
+    "info": "Info",
+    "new_count": "Noves",
+    "fixed_count": "Resoltes",
+    "requests": "Peticions",
+    "duration": "Durada (s)",
+    "error": "Error",
+    "user_id": "Llançada per",
+    "started_at": "Inici",
+    "finished_at": "Final"
+  },
+  "status": {
+    "running": "En curs",
+    "done": "Feta",
+    "failed": "Ha fallat"
+  },
+  "sections": {
+    "scan": "Anàlisi",
+    "counts": "Recomptes"
+  },
+  "actions": {
+    "report": "Informe",
+    "findings": "Troballes"
+  }
+}

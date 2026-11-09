@@ -1,0 +1,59 @@
+{
+  "title": "Objectius",
+  "description": "Webs i aplicacions que analitza Stellar",
+  "fields": {
+    "id": "ID",
+    "name": "Nom",
+    "kind": "Tipus",
+    "active": "Actiu",
+    "url": "Adreça de la web",
+    "code_path": "Carpeta del codi al servidor",
+    "code_zip": "O bé un .zip amb el codi",
+    "owner": "Client o responsable",
+    "authorized": "Autoritzat",
+    "notes": "Notes",
+    "last_score": "Puntuació",
+    "last_scan_at": "Darrera anàlisi",
+    "last_scan_id": "Núm. anàlisi",
+    "created_at": "Creat",
+    "where": "On"
+  },
+  "kind": {
+    "web": "Web",
+    "code": "Codi"
+  },
+  "placeholders": {
+    "url": "https://www.exemple.cat",
+    "code_path": "/home/usuari/Projects/aplicacio"
+  },
+  "help": {
+    "url": "La portada de la web. S'analitza des de fora, sense iniciar sessió i sense fer mal.",
+    "code_path": "Ha de ser dins de les carpetes permeses ('code_roots' de la configuració).",
+    "code_zip": "Si el codi no és al servidor de Stellar. Es descomprimeix, s'analitza i s'esborra.",
+    "authorized": "Confirmo que aquesta web o aquest codi és nostre o tenim permís per escrit per analitzar-lo. Sense aquesta marca no s'analitza."
+  },
+  "sections": {
+    "target": "Què s'analitza",
+    "authorization": "Responsable i autorització",
+    "last": "Darrera anàlisi"
+  },
+  "actions": {
+    "scan": "Analitza",
+    "report": "Informe"
+  },
+  "perm": {
+    "scan": "Analitzar"
+  },
+  "confirm": {
+    "scan": "S'analitzarà ara. Una web pot trigar un minut; el codi, segons la mida. Continuar?"
+  },
+  "flash": {
+    "scanned": "Anàlisi feta: {score}/100.",
+    "scan_failed": "L'anàlisi no s'ha pogut fer."
+  },
+  "errors": {
+    "url_required": "Cal l'adreça de la web.",
+    "url_invalid": "L'adreça de la web no és vàlida.",
+    "source_required": "Indica la carpeta del codi o puja un .zip."
+  }
+}

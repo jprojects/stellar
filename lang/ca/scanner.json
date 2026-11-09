@@ -1,0 +1,393 @@
+{
+  "kinds": { "web": "web", "code": "codi" },
+  "severity": { "critical": "Crítica", "high": "Alta", "medium": "Mitjana", "low": "Baixa", "info": "Informativa" },
+  "severity_n": { "critical": "crítiques", "high": "altes", "medium": "mitjanes", "low": "baixes", "info": "informatives" },
+  "errors": {
+    "not_authorized": "Aquest objectiu no té marcada l'autorització: només s'analitzen webs i codi propis o amb permís per escrit.",
+    "bad_url": "L'adreça «{url}» no és vàlida.",
+    "dns": "No es troba el domini «{host}».",
+    "private_ip": "«{host}» apunta a una adreça interna ({ip}). Per analitzar la xarxa interna cal activar 'allow_private' a la configuració.",
+    "unreachable": "La web no respon ({url}): {error}",
+    "redirect_away": "La web redirigeix a un altre domini ({url}). Crea un objectiu amb aquest domini si també és vostre.",
+    "no_dir": "La carpeta «{path}» no existeix al servidor.",
+    "dir_not_allowed": "La carpeta «{path}» no és dins de les carpetes permeses ('code_roots' de la configuració).",
+    "no_source": "Aquest objectiu de codi no té carpeta ni fitxer .zip.",
+    "no_zip_ext": "El PHP del servidor no té l'extensió zip.",
+    "bad_zip": "El fitxer .zip no és vàlid o conté rutes no permeses.",
+    "zip_too_big": "El fitxer .zip és massa gran per analitzar-lo.",
+    "internal": "Error intern de l'anàlisi: {error}"
+  },
+  "notes": {
+    "request_limit": "S'ha arribat al límit de {max} peticions: alguns controls no s'han fet.",
+    "home_status": "La portada respon amb l'estat HTTP {status}: l'anàlisi pot ser incompleta.",
+    "tls_failed": "No s'ha pogut llegir el certificat TLS: {error}",
+    "osv_off": "La comprovació de vulnerabilitats conegudes de les dependències (OSV.dev) està desactivada.",
+    "osv_failed": "No s'ha pogut consultar OSV.dev ({error}): falten les vulnerabilitats conegudes de les dependències.",
+    "max_files": "S'ha arribat al màxim de {max} fitxers: la resta no s'han analitzat."
+  },
+  "report": {
+    "title": "Informe de seguretat de Stellar: {target}",
+    "intro_web": "Instruccions per a Claude: ets un enginyer de seguretat web. Aquest és el resultat d'una anàlisi automàtica i no intrusiva d'una web en producció que és nostra (o en tenim permís). Pot haver-hi falsos positius: per a cada troballa, digues primer si et sembla real i quin impacte té; després, explica exactament què cal canviar (configuració d'Apache/Nginx/.htaccess, PHP, el CMS o el codi) amb el fragment a punt d'aplicar. Comença per les més greus. Si necessites veure algun fitxer o configuració per estar-ne segur, demana-ho.",
+    "intro_code": "Instruccions per a Claude: ets un enginyer de seguretat d'aplicacions. Aquest és el resultat d'una anàlisi estàtica automàtica (per patrons) del codi d'una aplicació nostra. Pot haver-hi falsos positius: per a cada troballa, revisa el codi indicat, digues si és explotable i per què, i proposa el canvi concret (diff o codi corregit) seguint l'estil del projecte. Comença per les més greus. Si et cal el fitxer sencer o el context d'una funció, demana-ho.",
+    "context": "Context",
+    "target": "Objectiu",
+    "date": "Data",
+    "scan_id": "anàlisi #{id}",
+    "score": "Puntuació",
+    "changes": "Respecte de l'anàlisi anterior",
+    "changes_text": "{new} troballes noves, {fixed} ja no hi són",
+    "environment": "Entorn detectat",
+    "redirects": "Redireccions",
+    "code_size": "Codi analitzat",
+    "code_size_text": "{files} fitxers, {lines} línies ({langs})",
+    "summary": "Resum",
+    "col_severity": "Gravetat",
+    "col_finding": "Troballa",
+    "col_where": "On",
+    "new": "nova",
+    "findings": "Troballes",
+    "none": "No s'ha trobat cap problema en els controls que fa Stellar.",
+    "no_findings": "cap problema",
+    "where": "On",
+    "reference": "Referència",
+    "comment": "Nota de l'equip",
+    "what": "Què passa:",
+    "evidence": "Prova:",
+    "fix": "Com resoldre-ho:",
+    "info": "Informatives (per tenir-les en compte)",
+    "limits": "Què no s'ha comprovat",
+    "skipped": "{count} troballes marcades com a acceptades, falsos positius o resoltes no s'inclouen.",
+    "limits_web": "L'anàlisi és externa i sense iniciar sessió: no prova formularis, àrees privades, lògica de negoci ni injeccions actives. Que no surti un problema no vol dir que no n'hi hagi.",
+    "limits_code": "L'anàlisi és per patrons, línia a línia: no segueix les dades entre funcions ni fitxers, ni revisa permisos, lògica de negoci o configuració del servidor. Que no surti un problema no vol dir que no n'hi hagi.",
+    "ask": "Què et demanem",
+    "ask_web": "1. Un pla ordenat per prioritat (què fer avui, aquesta setmana i quan es pugui).\n2. Per a cada troballa real, el canvi exacte a aplicar i com comprovar que ha quedat resolta (per exemple, amb curl).\n3. Les que creguis que són falsos positius, amb el motiu, perquè les puguem marcar a Stellar.",
+    "ask_code": "1. Un pla ordenat per prioritat.\n2. Per a cada troballa real, el canvi concret (diff) i, si cal, una prova que ho verifiqui.\n3. Les que creguis que són falsos positius, amb el motiu, perquè les puguem marcar a Stellar.\n4. Si veus altres problemes en el codi que ensenyem, digues-los."
+  },
+  "checks": {
+    "web.no_https": {
+      "title": "La web no té HTTPS",
+      "detail": "La web només funciona per HTTP: tot el que s'envia (contrasenyes, formularis, galetes de sessió) viatja sense xifrar i es pot llegir o modificar pel camí. Els navegadors la marquen com a «No segura».",
+      "fix": "Instal·la un certificat (Let's Encrypt és gratuït; als hostings sol ser un clic a cPanel/Plesk), redirigeix tot el trànsit HTTP a HTTPS amb un 301 i després activa HSTS."
+    },
+    "web.no_https_redirect": {
+      "title": "HTTP no redirigeix a HTTPS",
+      "detail": "La web té HTTPS però també respon per HTTP sense redirigir: qui hi entri escrivint el domini o per un enllaç antic navega sense xifrar.",
+      "fix": "Redirigeix tot HTTP a HTTPS amb un 301. Apache (.htaccess): `RewriteEngine On`, `RewriteCond %{HTTPS} off`, `RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]`. Nginx: un `server { listen 80; return 301 https://$host$request_uri; }`."
+    },
+    "web.form_http": {
+      "title": "Formulari que envia dades sense xifrar",
+      "detail": "Hi ha un formulari (o un camp de contrasenya) que s'envia per HTTP: les dades viatgen en clar.",
+      "fix": "Serveix la pàgina i l'`action` del formulari per HTTPS (canvia `http://` per `https://` o fes servir rutes relatives) i redirigeix HTTP a HTTPS."
+    },
+    "web.tls_invalid": {
+      "title": "Certificat TLS no vàlid",
+      "detail": "El navegador no confia en el certificat ({error}): els visitants veuen un avís de seguretat i el xifratge no protegeix contra suplantacions.",
+      "fix": "Instal·la un certificat vàlid per a aquest domini (també el www si s'hi accedeix) emès per una autoritat reconeguda, amb la cadena intermèdia completa. Comprova-ho amb `openssl s_client -connect domini:443 -servername domini`."
+    },
+    "web.tls_expired": {
+      "title": "Certificat TLS caducat",
+      "detail": "El certificat va caducar el {date}: els navegadors bloquegen la web amb un avís.",
+      "fix": "Renova el certificat ara i activa la renovació automàtica (certbot, AutoSSL del hosting…)."
+    },
+    "web.tls_expiring": {
+      "title": "El certificat TLS caduca d'aquí a {days} dies",
+      "detail": "El certificat caduca el {date}. Si no es renova, la web quedarà bloquejada pels navegadors.",
+      "fix": "Comprova que la renovació automàtica funciona (certbot renew --dry-run, AutoSSL…) o renova'l a mà abans del {date}."
+    },
+    "web.tls_legacy": {
+      "title": "Accepta {protocol}, un protocol obsolet",
+      "detail": "El servidor accepta {protocol}, retirat el 2021 (RFC 8996) per les seves debilitats. Cap navegador actual el necessita.",
+      "fix": "Deixa només TLS 1.2 i 1.3. Apache: `SSLProtocol -all +TLSv1.2 +TLSv1.3`. Nginx: `ssl_protocols TLSv1.2 TLSv1.3;`. En un hosting compartit, demana-ho al proveïdor o canvia-ho al panell."
+    },
+    "web.hsts_missing": {
+      "title": "Falta HSTS (Strict-Transport-Security)",
+      "detail": "Sense HSTS, el navegador pot fer la primera connexió per HTTP i algú a la mateixa xarxa la pot interceptar abans de la redirecció.",
+      "fix": "Afegeix la capçalera `Strict-Transport-Security: max-age=31536000; includeSubDomains` a les respostes HTTPS (Apache: `Header always set …` amb mod_headers; Nginx: `add_header … always;`). Comprova abans que tots els subdominis tenen HTTPS."
+    },
+    "web.hsts_weak": {
+      "title": "HSTS amb una durada curta ({days} dies)",
+      "detail": "L'HSTS només es recorda {days} dies; el recomanat és almenys 6 mesos.",
+      "fix": "Puja el `max-age` a 31536000 (un any)."
+    },
+    "web.csp_missing": {
+      "title": "Falta la política de seguretat de contingut (CSP)",
+      "detail": "Sense Content-Security-Policy, si algú aconsegueix injectar un script (XSS) el navegador l'executa sense cap límit.",
+      "fix": "Defineix una CSP començant en mode d'informe (`Content-Security-Policy-Report-Only`) i ajusta-la als dominis que la web fa servir; per exemple `default-src 'self'; script-src 'self' https://dominis-necessaris; object-src 'none'; base-uri 'self'; frame-ancestors 'self'`. Quan no doni errors, passa-la a `Content-Security-Policy`."
+    },
+    "web.csp_weak": {
+      "title": "La CSP permet scripts perillosos ({issues})",
+      "detail": "La política de contingut permet {issues}, cosa que anul·la bona part de la protecció contra XSS.",
+      "fix": "Treu `'unsafe-inline'`/`'unsafe-eval'` del `script-src`: mou els scripts en línia a fitxers o fes servir nonces (`'nonce-…'`) o hashes, i limita els orígens a dominis concrets."
+    },
+    "web.clickjacking": {
+      "title": "La web es pot incrustar en una altra (clickjacking)",
+      "detail": "No hi ha X-Frame-Options ni `frame-ancestors`: una altra web pot carregar aquesta dins d'un iframe invisible i enganyar l'usuari perquè faci clic on no vol.",
+      "fix": "Afegeix `X-Frame-Options: SAMEORIGIN` i, a la CSP, `frame-ancestors 'self'`."
+    },
+    "web.nosniff_missing": {
+      "title": "Falta X-Content-Type-Options: nosniff",
+      "detail": "Sense aquesta capçalera, el navegador pot interpretar un fitxer pujat (una imatge, un text) com a script o HTML.",
+      "fix": "Afegeix `X-Content-Type-Options: nosniff` a totes les respostes."
+    },
+    "web.referrer_missing": {
+      "title": "Falta Referrer-Policy",
+      "detail": "Sense política, l'adreça completa de la pàgina (que pot portar tokens o dades als paràmetres) s'envia a les webs externes on s'enllaça.",
+      "fix": "Afegeix `Referrer-Policy: strict-origin-when-cross-origin`."
+    },
+    "web.permissions_missing": {
+      "title": "Falta Permissions-Policy",
+      "detail": "No es limiten les funcions del navegador (càmera, micròfon, geolocalització…) que poden fer servir la web i els iframes de tercers.",
+      "fix": "Afegeix, per exemple, `Permissions-Policy: camera=(), microphone=(), geolocation=()` (deixant només el que la web necessiti)."
+    },
+    "web.server_version": {
+      "title": "El servidor diu la seva versió ({header})",
+      "detail": "La capçalera {header} mostra «{value}»: facilita saber quines vulnerabilitats conegudes provar.",
+      "fix": "Amaga-la. PHP: `expose_php = Off` al php.ini. Apache: `ServerTokens Prod` i `ServerSignature Off`. Nginx: `server_tokens off;`. També es pot treure amb `Header unset X-Powered-By`. I, sobretot, comprova que aquesta versió encara té suport."
+    },
+    "web.cookie_flags": {
+      "title": "Galeta «{cookie}» sense {missing}",
+      "detail": "La galeta {cookie} no porta {missing}. Secure evita que s'enviï per HTTP; HttpOnly, que un script (XSS) la pugui llegir; SameSite, que s'enviï des d'altres webs (CSRF).",
+      "fix": "Crea-la amb `Secure; HttpOnly; SameSite=Lax` (o `Strict`). PHP: `session.cookie_secure=1`, `session.cookie_httponly=1`, `session.cookie_samesite=Lax`, o les opcions de `setcookie()`. Si és d'un plugin o servei extern, revisa'n la configuració."
+    },
+    "web.mixed_content": {
+      "title": "Contingut mixt: {count} recursos per HTTP",
+      "detail": "La pàgina és HTTPS però carrega {count} recursos per HTTP. El navegador els bloqueja o avisa, i un script carregat així es podria modificar pel camí.",
+      "fix": "Canvia aquestes adreces a `https://` (o rutes relatives). A WordPress, revisa l'URL del lloc i fes un cerca-i-substitueix a la base de dades. Com a xarxa de seguretat, CSP `upgrade-insecure-requests`."
+    },
+    "web.sri_missing": {
+      "title": "{count} scripts externs sense integritat (SRI)",
+      "detail": "Es carreguen scripts d'altres dominis sense l'atribut `integrity`: si aquell servidor o CDN fos compromès, el codi maliciós s'executaria a la web.",
+      "fix": "Afegeix `integrity=\"sha384-…\" crossorigin=\"anonymous\"` als `<script>` de CDN amb versió fixa (srihash.org dona el valor) o serveix els fitxers des del mateix domini."
+    },
+    "web.vcs_exposed": {
+      "title": "Repositori git/svn públic ({path})",
+      "detail": "Es pot descarregar {path}: amb eines automàtiques es reconstrueix tot el codi font i l'historial, incloses contrasenyes que s'hi hagin escrit mai.",
+      "fix": "Bloqueja l'accés a les carpetes de control de versions (Apache: `RedirectMatch 404 /\\.(git|svn|hg)`; Nginx: `location ~ /\\.(git|svn|hg) { deny all; }`) o, millor, desplega sense la carpeta .git. Després canvia totes les contrasenyes i claus que hi hagi a l'historial."
+    },
+    "web.env_exposed": {
+      "title": "Fitxer de configuració .env públic ({path})",
+      "detail": "Qualsevol pot descarregar {path}, que sol tenir les contrasenyes de la base de dades, claus d'API i la clau de l'aplicació.",
+      "fix": "Bloqueja els fitxers que comencen per punt (Apache: `<FilesMatch \"^\\.\"> Require all denied </FilesMatch>`; Nginx: `location ~ /\\. { deny all; }`) i posa el document root a la carpeta public/. **Canvia ara totes les credencials** que hi hagi: s'han de considerar filtrades."
+    },
+    "web.config_backup": {
+      "title": "Còpia d'un fitxer de configuració descarregable ({path})",
+      "detail": "{path} és una còpia de la configuració que el servidor no executa com a PHP i serveix com a text, amb les contrasenyes de la base de dades.",
+      "fix": "Esborra-la del servidor, bloqueja extensions de còpia (`.bak`, `.old`, `.save`, `~`, `.txt` de configuració) i canvia les credencials que contenia."
+    },
+    "web.backup_exposed": {
+      "title": "Còpia de seguretat descarregable ({path})",
+      "detail": "Es pot descarregar {path}, una còpia de la web o de la base de dades (dades personals, usuaris, contrasenyes).",
+      "fix": "Treu les còpies del directori públic (guarda-les fora del document root o en un altre servei) i revisa si hi ha més fitxers semblants. Si conté dades personals, valora si cal notificar-ho (RGPD)."
+    },
+    "web.ftp_config_exposed": {
+      "title": "Configuració de FTP/SFTP de l'editor pública ({path})",
+      "detail": "{path} és la configuració de pujada de l'editor (VS Code/Sublime) i sol tenir el servidor, l'usuari i la contrasenya de FTP/SFTP.",
+      "fix": "Esborra-la del servidor, afegeix-la al .gitignore i a les exclusions de pujada, i canvia la contrasenya de FTP/SFTP."
+    },
+    "web.htpasswd_exposed": {
+      "title": "Fitxer .htpasswd públic",
+      "detail": "Es poden descarregar els usuaris i les contrasenyes xifrades de l'accés protegit; les febles es poden trencar.",
+      "fix": "Mou el .htpasswd fora del document root (o bloqueja `^\\.ht`) i canvia les contrasenyes."
+    },
+    "web.adminer_exposed": {
+      "title": "Adminer accessible ({path})",
+      "detail": "Hi ha un gestor de bases de dades a la vista: és objectiu habitual d'atacs de força bruta i ha tingut vulnerabilitats greus.",
+      "fix": "Esborra'l quan no s'estigui fent servir o protegeix-lo amb una altra capa (IP permeses, contrasenya HTTP)."
+    },
+    "web.phpinfo_exposed": {
+      "title": "Pàgina phpinfo() pública ({path})",
+      "detail": "{path} mostra la configuració sencera de PHP i del servidor: rutes, versions, mòduls i de vegades variables d'entorn amb secrets.",
+      "fix": "Esborra el fitxer."
+    },
+    "web.log_exposed": {
+      "title": "Fitxer de registre públic ({path})",
+      "detail": "{path} és un registre d'errors descarregable: revela rutes del servidor, consultes, versions i de vegades dades d'usuaris.",
+      "fix": "Esborra'l, desa els registres fora del document root (WordPress: `WP_DEBUG_LOG` amb una ruta privada, o `WP_DEBUG` a false en producció) i bloqueja `*.log`."
+    },
+    "web.server_status": {
+      "title": "Estat del servidor Apache públic (/server-status)",
+      "detail": "Mostra en temps real les peticions que rep el servidor, amb adreces, IP dels visitants i paràmetres.",
+      "fix": "Limita `/server-status` a localhost (`Require local`) o desactiva mod_status."
+    },
+    "web.phpmyadmin_exposed": {
+      "title": "phpMyAdmin accessible ({path})",
+      "detail": "phpMyAdmin a la vista és un objectiu habitual de força bruta i de vulnerabilitats.",
+      "fix": "Treu-lo de la web pública o limita'l per IP / amb una segona contrasenya HTTP."
+    },
+    "web.debug_mode": {
+      "title": "Eina de depuració en producció ({path})",
+      "detail": "{path} és una eina de desenvolupament (perfilador o panell de depuració) que mostra peticions, consultes, variables i de vegades secrets.",
+      "fix": "Desactiva el mode de desenvolupament en producció (Symfony: `APP_ENV=prod`; Laravel: `APP_DEBUG=false` i Telescope només en local)."
+    },
+    "web.junk_files": {
+      "title": "Fitxers de l'ordinador del desenvolupador publicats ({path})",
+      "detail": "{path} revela noms de fitxers i carpetes interns del projecte.",
+      "fix": "Esborra'ls, afegeix-los al .gitignore i a les exclusions de pujada."
+    },
+    "web.dir_listing": {
+      "title": "Llistat de la carpeta {path} visible",
+      "detail": "El servidor ensenya tots els fitxers de {path}: qualsevol pot veure i descarregar documents que no estan enllaçats.",
+      "fix": "Desactiva els llistats: Apache `Options -Indexes` (al .htaccess); Nginx `autoindex off;`. Revisa què hi ha a la carpeta."
+    },
+    "web.cors_reflect": {
+      "title": "CORS accepta qualsevol origen (credencials: {credentials})",
+      "detail": "El servidor respon a qualsevol web externa amb Access-Control-Allow-Origin igual al seu origen (Allow-Credentials: {credentials}). Si és «true», una web maliciosa pot llegir dades de l'usuari amb la seva sessió.",
+      "fix": "Respon només als orígens d'una llista blanca concreta i no facis servir `Access-Control-Allow-Credentials: true` amb orígens no fixos."
+    },
+    "web.reflected_input": {
+      "title": "La web retorna el que s'escriu a l'adreça sense escapar (possible XSS)",
+      "detail": "Un paràmetre amb cometes i `<` s'ha retornat tal qual dins de l'HTML. Molt probablement hi ha un XSS reflectit: un enllaç preparat pot executar codi al navegador de qui l'obri.",
+      "fix": "Escapa sempre la sortida segons el context (`htmlspecialchars($valor, ENT_QUOTES, 'UTF-8')` a PHP, `esc_html()`/`esc_attr()` a WordPress) i afegeix una CSP. Busca on es fa servir el paràmetre al codi."
+    },
+    "web.error_disclosure": {
+      "title": "Missatges d'error interns visibles ({kind})",
+      "detail": "La web mostra errors interns ({kind}) als visitants: rutes, consultes SQL o traces que ajuden a atacar-la, i que poden indicar una injecció.",
+      "fix": "En producció, `display_errors = Off` i `log_errors = On` (registre fora de la web); desactiva el mode debug del framework. Si és un error SQL provocat per les cometes, revisa la consulta: probablement no fa servir consultes preparades."
+    },
+    "web.trace_enabled": {
+      "title": "Mètode TRACE activat",
+      "detail": "El servidor respon a TRACE retornant la petició, cosa que en combinació amb altres errors pot servir per robar galetes (XST).",
+      "fix": "Apache: `TraceEnable Off`. Nginx no el suporta per defecte; revisa el proxy."
+    },
+    "web.cms_version": {
+      "title": "Es veu la versió de {cms} ({version})",
+      "detail": "La web diu que fa servir {cms} {version}. Si no és la darrera, té vulnerabilitats conegudes i públiques.",
+      "fix": "Actualitza {cms} a la darrera versió (i els plugins/temes) i amaga la versió (WordPress: treure el meta generator i el readme.html)."
+    },
+    "web.wp_plugins": {
+      "title": "Plugins de WordPress detectats ({count})",
+      "detail": "Plugins visibles des de fora: {plugins}.",
+      "fix": "Comprova que tots estan actualitzats i sense vulnerabilitats conegudes (wpscan.com/plugins, patchstack.com/database) i esborra els que no es facin servir."
+    },
+    "web.wp_xmlrpc": {
+      "title": "XML-RPC de WordPress actiu",
+      "detail": "xmlrpc.php accepta peticions: permet provar moltes contrasenyes en una sola petició (system.multicall) i atacs de pingback.",
+      "fix": "Si no es fa servir (Jetpack, l'app mòbil), desactiva'l: plugin, filtre `add_filter('xmlrpc_enabled', '__return_false');` o bloqueja `xmlrpc.php` al servidor."
+    },
+    "web.wp_user_enum": {
+      "title": "Es poden llistar els usuaris de WordPress",
+      "detail": "L'API REST mostra els noms d'usuari ({users}): és la meitat de l'usuari i contrasenya per a un atac de força bruta.",
+      "fix": "Limita l'endpoint `/wp-json/wp/v2/users` a usuaris identificats (filtre `rest_endpoints` o un plugin de seguretat), bloqueja `?author=N` i activa el límit d'intents i el 2FA."
+    },
+    "web.security_txt": {
+      "title": "Falta security.txt",
+      "detail": "No hi ha /.well-known/security.txt, el fitxer estàndard (RFC 9116) on qui troba una vulnerabilitat sap a qui avisar.",
+      "fix": "Publica `/.well-known/security.txt` amb almenys `Contact: mailto:seguretat@…` i `Expires: …`."
+    },
+    "web.robots_paths": {
+      "title": "El robots.txt assenyala rutes sensibles",
+      "detail": "El robots.txt llista rutes que semblen privades ({paths}). No protegeix res: només ho anuncia.",
+      "fix": "No posis rutes privades al robots.txt; protegeix-les amb autenticació."
+    },
+    "web.js_vulnerable": {
+      "title": "{package} {version} té {count} vulnerabilitats conegudes",
+      "detail": "La web carrega la llibreria JavaScript {package} {version}, amb {count} vulnerabilitats publicades (vegeu la prova).",
+      "fix": "Actualitza {package} almenys a la {fixed} (millor la darrera estable) i comprova que la web continua funcionant. Si la porta el tema o un plugin, actualitza'l."
+    },
+    "code.sqli": {
+      "title": "Possible injecció SQL a {file}",
+      "detail": "Hi ha consultes SQL muntades concatenant variables ({count} línies). Si alguna ve de l'usuari sense validar, pot llegir o modificar tota la base de dades.",
+      "fix": "Fes servir consultes preparades amb paràmetres (`?` o `:nom`) per a tots els valors; per a noms de columnes o ordre, una llista blanca. No n'hi ha prou amb escapar."
+    },
+    "code.cmd_injection": {
+      "title": "Possible execució d'ordres del sistema a {file}",
+      "detail": "S'executen ordres del sistema amb variables ({count} línies). Si alguna ve de l'usuari, pot executar qualsevol cosa al servidor.",
+      "fix": "Evita el shell: fes servir funcions del llenguatge o passa els arguments com a llista (proc_open amb array, `spawn` sense `shell`, `subprocess.run([...])`). Si no hi ha alternativa, `escapeshellarg()` a cada argument i llista blanca de valors."
+    },
+    "code.file_inclusion": {
+      "title": "Include/require amb dades de l'usuari a {file}",
+      "detail": "Es carrega un fitxer PHP amb un nom que ve de la petició: pot permetre executar codi o llegir fitxers del servidor.",
+      "fix": "No incloguis mai rutes que vinguin de l'usuari: fes servir una llista blanca (`match`/array de valors permesos → fitxer)."
+    },
+    "code.path_traversal": {
+      "title": "Accés a fitxers amb rutes de l'usuari a {file}",
+      "detail": "S'obren, llegeixen o esborren fitxers amb una ruta que ve de la petició ({count} línies): amb `../` es pot arribar a qualsevol fitxer.",
+      "fix": "Fes servir identificadors en lloc de rutes, o `basename()` + `realpath()` i comprova que el resultat és dins de la carpeta permesa."
+    },
+    "code.unserialize": {
+      "title": "Deserialització insegura a {file}",
+      "detail": "Es deserialitzen dades ({count} línies) amb `unserialize`/`pickle`/`yaml.load`. Amb dades d'un atacant pot acabar executant codi.",
+      "fix": "Fes servir JSON (`json_decode`, `json.loads`). Si cal unserialize a PHP, `['allowed_classes' => false]`; a Python, `yaml.safe_load`."
+    },
+    "code.eval": {
+      "title": "Ús d'eval o equivalent a {file}",
+      "detail": "S'executa codi construït en temps d'execució ({count} línies). Si hi entra qualsevol dada externa, és execució de codi remota.",
+      "fix": "Reescriu-ho sense eval (mapes de funcions, JSON.parse, etc.)."
+    },
+    "code.xss": {
+      "title": "Possible XSS: sortida sense escapar a {file}",
+      "detail": "Es mostren a la pàgina dades sense escapar ({count} línies), en alguns casos directament de la petició. Pot permetre executar scripts al navegador d'altres usuaris.",
+      "fix": "Escapa segons el context: PHP `htmlspecialchars($v, ENT_QUOTES, 'UTF-8')` (o `esc_html`/`esc_attr` a WordPress); JavaScript `textContent` en lloc de `innerHTML`, o DOMPurify si cal HTML."
+    },
+    "code.open_redirect": {
+      "title": "Redirecció oberta a {file}",
+      "detail": "Es redirigeix a una adreça que ve de la petició: es pot fer servir per a enllaços de pesca que semblen de la vostra web.",
+      "fix": "Redirigeix només a rutes internes (comença per `/` i no per `//`) o a una llista blanca de dominis (`wp_safe_redirect` a WordPress)."
+    },
+    "code.mass_assignment": {
+      "title": "extract()/parse_str() amb dades de la petició a {file}",
+      "detail": "Es converteixen paràmetres de la petició en variables: un atacant pot sobreescriure qualsevol variable (permisos, rutes…).",
+      "fix": "Llegeix només els camps que necessites, explícitament (`$_POST['nom'] ?? ''`)."
+    },
+    "code.weak_password_hash": {
+      "title": "Contrasenyes amb un hash feble a {file}",
+      "detail": "Es fa servir MD5/SHA1/SHA256 per a contrasenyes: amb una filtració, es trenquen en minuts.",
+      "fix": "Fes servir `password_hash()` / `password_verify()` (bcrypt o Argon2) i migra els hashos antics en el proper inici de sessió."
+    },
+    "code.upload": {
+      "title": "Pujada de fitxers amb el nom original a {file}",
+      "detail": "Es desa el fitxer pujat amb el nom que envia l'usuari: pot pujar un `.php` i executar-lo, o sobreescriure fitxers.",
+      "fix": "Genera tu el nom (aleatori), valida l'extensió i el tipus real (finfo) contra una llista blanca i desa'l fora del document root o en una carpeta sense execució de PHP."
+    },
+    "code.weak_random": {
+      "title": "Aleatori no segur per a tokens a {file}",
+      "detail": "Es generen tokens, contrasenyes o codis amb `rand`/`mt_rand`/`uniqid`/`Math.random`, que són previsibles.",
+      "fix": "Fes servir `random_bytes()` / `random_int()` (PHP), `crypto.randomBytes`/`crypto.getRandomValues` (JS) o `secrets` (Python)."
+    },
+    "code.loose_compare": {
+      "title": "Comparació no estricta de tokens o hashos a {file}",
+      "detail": "Es comparen tokens, hashos o contrasenyes amb `==`: per conversions de tipus de PHP, valors diferents poden semblar iguals, i el temps de resposta pot filtrar el valor.",
+      "fix": "Fes servir `hash_equals()` per a tokens i hashos i `password_verify()` per a contrasenyes."
+    },
+    "code.prototype_pollution": {
+      "title": "Possible contaminació de prototips a {file}",
+      "detail": "S'assignen propietats amb claus que venen de la petició: amb `__proto__` es poden alterar tots els objectes de l'aplicació.",
+      "fix": "Rebutja les claus `__proto__`, `constructor` i `prototype`, o fes servir `Map`/`Object.create(null)`."
+    },
+    "code.debug_enabled": {
+      "title": "Mode de depuració activat a {file}",
+      "detail": "La configuració mostra errors o activa el mode debug: en producció revela informació interna.",
+      "fix": "Desactiva-ho en producció (fes que depengui de l'entorn): `display_errors=Off`, `APP_DEBUG=false`, `DEBUG=False`."
+    },
+    "code.tls_verify_off": {
+      "title": "Connexions HTTPS sense verificar el certificat a {file}",
+      "detail": "Es desactiva la verificació del certificat ({count} línies): qualsevol pot fer-se passar pel servidor remot i llegir o canviar les dades (claus d'API incloses).",
+      "fix": "Treu les opcions que desactiven la verificació; si el problema era la cadena de certificats, configura el fitxer de CA (`CURLOPT_CAINFO`) en lloc de desactivar-la."
+    },
+    "code.cors_any": {
+      "title": "CORS obert a qualsevol origen a {file}",
+      "detail": "Es respon `Access-Control-Allow-Origin: *`: qualsevol web pot llegir aquestes respostes des del navegador dels usuaris.",
+      "fix": "Si l'API és pública i sense dades privades, pot ser correcte; si no, limita-ho a una llista d'orígens."
+    },
+    "code.secret": {
+      "title": "Clau o token ({kind}) escrit al codi a {file}",
+      "detail": "Hi ha una credencial real ({kind}) al codi. Tothom que tingui accés al codi o al repositori (o a una còpia filtrada) la pot fer servir.",
+      "fix": "Revoca-la i genera'n una de nova **ara**, mou-la a una variable d'entorn o un fitxer de configuració fora del repositori (com `config.local.php` o `.env` al .gitignore) i, si és en un repositori, esborra-la de l'historial (git filter-repo)."
+    },
+    "code.hardcoded_credential": {
+      "title": "Contrasenya o clau escrita al codi a {file}",
+      "detail": "Hi ha credencials escrites directament ({count} línies).",
+      "fix": "Mou-les a configuració fora del repositori (variables d'entorn, `config.local.php` o `.env` ignorats per git) i canvia-les si el codi s'ha compartit."
+    },
+    "code.env_file": {
+      "title": "Fitxer de secrets dins del projecte ({file})",
+      "detail": "{file} conté contrasenyes o claus i forma part del codi entregat (si és al repositori git, queden a l'historial).",
+      "fix": "Treu-lo del repositori (`git rm --cached`), afegeix-lo al .gitignore, deixa un `.env.example` sense valors i canvia les credencials si el repositori s'ha compartit."
+    },
+    "code.dep_vulnerable": {
+      "title": "Dependència vulnerable: {package} {version}",
+      "detail": "{package} {version} ({ecosystem}, a {file}) té {vulns} vulnerabilitats conegudes (vegeu la prova).",
+      "fix": "Actualitza {package} almenys a la {fixed} (`composer update {package}` / `npm install {package}@latest` / `pip install -U {package}`), passa els tests i torna a analitzar."
+    }
+  }
+}

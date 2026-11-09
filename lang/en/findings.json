@@ -1,0 +1,35 @@
+{
+  "title": "Findings",
+  "description": "Problems found. Mark false positives and accepted risks so they stop appearing in the report.",
+  "fields": {
+    "id": "ID",
+    "scan_id": "Scan",
+    "target_id": "Target",
+    "severity": "Severity",
+    "status": "Status",
+    "category": "Type",
+    "title": "Finding",
+    "location": "Where",
+    "detail": "What happens",
+    "evidence": "Evidence",
+    "fix": "How to fix",
+    "cwe": "CWE",
+    "check_id": "Check",
+    "is_new": "New",
+    "comment": "Note",
+    "created_at": "Found"
+  },
+  "status": {
+    "open": "Open",
+    "fixed": "Fixed",
+    "accepted": "Risk accepted",
+    "false_positive": "False positive"
+  },
+  "help": {
+    "comment": "Why it is a false positive or why the risk is accepted. Shown in the report for Claude."
+  },
+  "sections": {
+    "decision": "Decision",
+    "finding": "Finding"
+  }
+}

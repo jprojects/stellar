@@ -1,0 +1,35 @@
+{
+  "title": "Hallazgos",
+  "description": "Problemas encontrados. Marca los falsos positivos y los riesgos aceptados para que no vuelvan a salir en el informe.",
+  "fields": {
+    "id": "ID",
+    "scan_id": "Análisis",
+    "target_id": "Objetivo",
+    "severity": "Gravedad",
+    "status": "Estado",
+    "category": "Tipo",
+    "title": "Hallazgo",
+    "location": "Dónde",
+    "detail": "Qué pasa",
+    "evidence": "Prueba",
+    "fix": "Cómo resolverlo",
+    "cwe": "CWE",
+    "check_id": "Control",
+    "is_new": "Nuevo",
+    "comment": "Nota",
+    "created_at": "Encontrado"
+  },
+  "status": {
+    "open": "Abierto",
+    "fixed": "Resuelto",
+    "accepted": "Riesgo aceptado",
+    "false_positive": "Falso positivo"
+  },
+  "help": {
+    "comment": "Por qué es un falso positivo o por qué se acepta el riesgo. Sale en el informe para Claude."
+  },
+  "sections": {
+    "decision": "Decisión",
+    "finding": "Hallazgo"
+  }
+}
