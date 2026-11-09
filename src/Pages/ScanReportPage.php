@@ -75,7 +75,7 @@ final class ScanReportPage extends Page
         [$scan, $target, $findings] = $data;
         return [
             'scan' => $scan,
-            'target' => array_intersect_key($target, array_flip(['id', 'name', 'kind', 'url', 'code_path', 'owner', 'last_score'])),
+            'target' => array_intersect_key($target, array_flip(['id', 'name', 'kind', 'url', 'code_source', 'code_path', 'repo_url', 'repo_branch', 'owner', 'last_score'])),
             'findings' => array_map(static fn ($f) => array_intersect_key($f, array_flip(['id', 'severity', 'status', 'title', 'location', 'check_id', 'cwe', 'is_new'])), $findings),
             'markdown' => $scan['status'] === 'done' ? $this->markdown($scan, $target, $findings) : null,
         ];
@@ -126,7 +126,7 @@ final class ScanReportPage extends Page
     {
         $db = $this->app->db;
         $targets = $db->fetchAll(
-            "SELECT t.id, t.name, t.kind, t.url, t.code_path, t.owner, t.authorized, t.active, t.last_score, t.last_scan_at, t.last_scan_id,
+            "SELECT t.id, t.name, t.kind, t.url, t.code_source, t.code_path, t.repo_url, t.repo_branch, t.owner, t.authorized, t.active, t.last_score, t.last_scan_at, t.last_scan_id,
                     s.critical, s.high, s.medium, s.low, s.new_count, s.fixed_count
                FROM targets t LEFT JOIN scans s ON s.id = t.last_scan_id
               WHERE t.active = 1
@@ -146,6 +146,19 @@ final class ScanReportPage extends Page
                 "SELECT s.id, s.status, s.score, s.started_at, s.error, t.name FROM scans s JOIN targets t ON t.id = s.target_id ORDER BY s.id DESC LIMIT 8"
             ),
         ];
+    }
+
+    /** Qué se analiza, para mostrarlo: la URL, el repositorio (y la rama), la carpeta o «.zip». */
+    public static function where(array $t): string
+    {
+        if ($t['kind'] === 'web') {
+            return (string) $t['url'];
+        }
+        return match ((string) ($t['code_source'] ?? '')) {
+            'git' => (string) $t['repo_url'] . (!empty($t['repo_branch']) ? ' · ' . $t['repo_branch'] : ''),
+            'zip' => '.zip',
+            default => (string) ($t['code_path'] ?: '.zip'),
+        };
     }
 
     /** Tono (qs-tone-*) de una puntuación. */

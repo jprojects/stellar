@@ -40,7 +40,7 @@ final class ReportBuilder
         $md[] = '## ' . $t('report.context');
         $md[] = '';
         $where = $kind === 'web' ? (string) ($meta['final_url'] ?? $target['url'])
-            : (string) ($meta['zip'] ?? $target['code_path'] ?? '');
+            : (string) (isset($meta['repo']['repo']) ? $meta['repo']['repo'] : ($meta['zip'] ?? $target['code_path'] ?? ''));
         $md[] = '- **' . $t('report.target') . ':** ' . $target['name'] . ' · ' . $t("kinds.$kind") . ' · `' . $where . '`';
         $md[] = '- **' . $t('report.date') . ':** ' . $date . ' · ' . $t('report.scan_id', ['id' => $scan['id']]);
         $md[] = '- **' . $t('report.score') . ':** ' . (int) $scan['score'] . '/100 · ' . $this->counts($scan);
@@ -153,6 +153,10 @@ final class ReportBuilder
                 $out[] = '**' . $t('report.redirects') . ':** ' . implode(' · ', (array) $meta['redirects']);
             }
         } else {
+            if (!empty($meta['repo']['repo'])) {
+                $r = $meta['repo'];
+                $out[] = '**' . $t('report.repo') . ':** `' . $r['repo'] . '`' . (!empty($r['branch']) ? ' · ' . $r['branch'] : '') . (!empty($r['commit']) ? ' · commit `' . $r['commit'] . '`' : '');
+            }
             $langs = implode(', ', array_map(static fn ($k, $v) => "$k ($v)", array_keys((array) ($meta['languages'] ?? [])), (array) ($meta['languages'] ?? [])));
             $out[] = '**' . $t('report.code_size') . ':** ' . $t('report.code_size_text', [
                 'files' => (int) ($meta['files'] ?? 0), 'lines' => number_format((int) ($meta['lines'] ?? 0), 0, ',', '.'), 'langs' => $langs ?: '—',

@@ -16,7 +16,10 @@
     "last_scan_at": "Last scan",
     "last_scan_id": "Scan no.",
     "created_at": "Created",
-    "where": "Where"
+    "where": "Where",
+    "code_source": "Code source",
+    "repo_url": "Git repository",
+    "repo_branch": "Branch"
   },
   "kind": {
     "web": "Website",
@@ -24,13 +27,17 @@
   },
   "placeholders": {
     "url": "https://www.example.com",
-    "code_path": "/home/user/Projects/app"
+    "code_path": "/home/user/Projects/app",
+    "repo_url": "https://github.com/company/app",
+    "repo_branch": "main"
   },
   "help": {
     "url": "The site's home page. It is scanned from outside, unauthenticated and harmlessly.",
     "code_path": "Must be inside the allowed folders ('code_roots' in the configuration).",
     "code_zip": "If the code is not on the Stellar server. It is unzipped, scanned and deleted.",
-    "authorized": "I confirm this website or code is ours or we have written permission to scan it. Without this mark it is not scanned."
+    "authorized": "I confirm this website or code is ours or we have written permission to scan it. Without this mark it is not scanned.",
+    "repo_url": "Public or private. Private ones need a read-only token in the configuration ('git_tokens'). It is downloaded on each scan and deleted.",
+    "repo_branch": "Empty = the default branch."
   },
   "sections": {
     "target": "What is scanned",
@@ -54,6 +61,14 @@
   "errors": {
     "url_required": "The website address is required.",
     "url_invalid": "The website address is not valid.",
-    "source_required": "Enter the code folder or upload a .zip."
+    "source_required": "Enter the code folder or upload a .zip.",
+    "repo_required": "The repository address is required.",
+    "repo_invalid": "The repository address must be https://server/owner/repo.",
+    "branch_invalid": "The branch is not valid."
+  },
+  "source": {
+    "path": "Server folder",
+    "zip": ".zip file",
+    "git": "Git repository"
   }
 }

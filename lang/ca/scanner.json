@@ -1,7 +1,22 @@
 {
-  "kinds": { "web": "web", "code": "codi" },
-  "severity": { "critical": "Crítica", "high": "Alta", "medium": "Mitjana", "low": "Baixa", "info": "Informativa" },
-  "severity_n": { "critical": "crítiques", "high": "altes", "medium": "mitjanes", "low": "baixes", "info": "informatives" },
+  "kinds": {
+    "web": "web",
+    "code": "codi"
+  },
+  "severity": {
+    "critical": "Crítica",
+    "high": "Alta",
+    "medium": "Mitjana",
+    "low": "Baixa",
+    "info": "Informativa"
+  },
+  "severity_n": {
+    "critical": "crítiques",
+    "high": "altes",
+    "medium": "mitjanes",
+    "low": "baixes",
+    "info": "informatives"
+  },
   "errors": {
     "not_authorized": "Aquest objectiu no té marcada l'autorització: només s'analitzen webs i codi propis o amb permís per escrit.",
     "bad_url": "L'adreça «{url}» no és vàlida.",
@@ -15,7 +30,15 @@
     "no_zip_ext": "El PHP del servidor no té l'extensió zip.",
     "bad_zip": "El fitxer .zip no és vàlid o conté rutes no permeses.",
     "zip_too_big": "El fitxer .zip és massa gran per analitzar-lo.",
-    "internal": "Error intern de l'anàlisi: {error}"
+    "internal": "Error intern de l'anàlisi: {error}",
+    "repo_url": "L'adreça del repositori «{url}» no és vàlida: ha de ser https://servidor/propietari/repo.",
+    "repo_host": "El servidor git «{host}» no està permès. Permesos: {hosts} (afegeix-ne a 'git_hosts' o 'git_tokens').",
+    "repo_branch": "La branca «{branch}» no és vàlida o no existeix.",
+    "repo_access": "No es pot accedir al repositori {repo}: no existeix o és privat i falta el token (o no té accés). Revisa 'git_tokens' a la configuració.",
+    "repo_access_branch": "No es troba el repositori {repo} o la branca «{branch}» (o el token no hi té accés).",
+    "repo_failed": "No s'ha pogut descarregar el repositori: {error}",
+    "repo_too_big": "El repositori és massa gran per analitzar-lo.",
+    "no_git": "El servidor no té git i aquest repositori no és de GitHub: no es pot descarregar."
   },
   "notes": {
     "request_limit": "S'ha arribat al límit de {max} peticions: alguns controls no s'han fet.",
@@ -61,7 +84,8 @@
     "limits_code": "L'anàlisi és per patrons, línia a línia: no segueix les dades entre funcions ni fitxers, ni revisa permisos, lògica de negoci o configuració del servidor. Que no surti un problema no vol dir que no n'hi hagi.",
     "ask": "Què et demanem",
     "ask_web": "1. Un pla ordenat per prioritat (què fer avui, aquesta setmana i quan es pugui).\n2. Per a cada troballa real, el canvi exacte a aplicar i com comprovar que ha quedat resolta (per exemple, amb curl).\n3. Les que creguis que són falsos positius, amb el motiu, perquè les puguem marcar a Stellar.",
-    "ask_code": "1. Un pla ordenat per prioritat.\n2. Per a cada troballa real, el canvi concret (diff) i, si cal, una prova que ho verifiqui.\n3. Les que creguis que són falsos positius, amb el motiu, perquè les puguem marcar a Stellar.\n4. Si veus altres problemes en el codi que ensenyem, digues-los."
+    "ask_code": "1. Un pla ordenat per prioritat.\n2. Per a cada troballa real, el canvi concret (diff) i, si cal, una prova que ho verifiqui.\n3. Les que creguis que són falsos positius, amb el motiu, perquè les puguem marcar a Stellar.\n4. Si veus altres problemes en el codi que ensenyem, digues-los.",
+    "repo": "Repositori"
   },
   "checks": {
     "web.no_https": {

@@ -15,10 +15,16 @@
     "active":       { "type": "checkbox", "default": 1, "width": "quarter" },
     "url":          { "type": "text", "maxlength": 500, "placeholder": "placeholders.url", "showon": "kind:web",
                       "help": "help.url" },
-    "code_path":    { "type": "text", "maxlength": 500, "placeholder": "placeholders.code_path", "showon": "kind:code",
-                      "help": "help.code_path", "width": "half" },
-    "code_zip":     { "type": "media", "accept": [".zip", "application/zip"], "maxSize": "200M", "showon": "kind:code",
-                      "help": "help.code_zip", "width": "half" },
+    "code_source":  { "type": "select", "default": "git", "width": "half", "showon": "kind:code",
+                      "options": { "git": "source.git", "path": "source.path", "zip": "source.zip" } },
+    "repo_url":     { "type": "text", "maxlength": 500, "placeholder": "placeholders.repo_url", "showon": "kind:code[AND]code_source:git",
+                      "help": "help.repo_url", "width": "two-thirds" },
+    "repo_branch":  { "type": "text", "maxlength": 150, "placeholder": "placeholders.repo_branch", "showon": "kind:code[AND]code_source:git",
+                      "help": "help.repo_branch", "width": "third" },
+    "code_path":    { "type": "text", "maxlength": 500, "placeholder": "placeholders.code_path", "showon": "kind:code[AND]code_source:path",
+                      "help": "help.code_path" },
+    "code_zip":     { "type": "media", "accept": [".zip", "application/zip"], "maxSize": "200M", "showon": "kind:code[AND]code_source:zip",
+                      "help": "help.code_zip" },
     "owner":        { "type": "text", "maxlength": 150, "width": "half" },
     "authorized":   { "type": "checkbox", "default": 0, "width": "half", "help": "help.authorized", "colors": { "0": "red" } },
     "notes":        { "type": "textarea", "rows": 3, "maxlength": 4000 },
@@ -26,7 +32,7 @@
     "last_scan_at": { "type": "datetime", "readonly": true, "width": "quarter" },
     "last_scan_id": { "type": "number", "readonly": true, "grouping": false, "width": "quarter" },
     "created_at":   { "type": "datetime", "readonly": true, "width": "quarter" },
-    "where":        { "type": "text", "sql": "COALESCE(NULLIF(targets.url, ''), NULLIF(targets.code_path, ''), (SELECT m.original_name FROM media m WHERE m.id = targets.code_zip))" }
+    "where":        { "type": "text", "sql": "COALESCE(NULLIF(targets.url, ''), IF(targets.code_source = 'git', NULLIF(targets.repo_url, ''), NULL), NULLIF(targets.code_path, ''), (SELECT m.original_name FROM media m WHERE m.id = targets.code_zip))" }
   },
 
   "list": {
@@ -43,7 +49,7 @@
     "expand": ["notes"],
     "defaultSort": { "field": "name", "dir": "asc" },
     "pageSize": 25,
-    "search": ["name", "url", "code_path", "owner", "notes"],
+    "search": ["name", "url", "repo_url", "code_path", "owner", "notes"],
     "filters": [
       { "field": "kind" },
       { "field": "active" },
@@ -64,7 +70,7 @@
       { "label": "actions.report", "icon": "file-text", "url": "index.php?r=page&m=scan_report&target={id}", "showon": "last_scan_id!:" }
     ],
     "sections": [
-      { "title": "sections.target", "fields": ["name", "kind", "active", "url", "code_path", "code_zip"] },
+      { "title": "sections.target", "fields": ["name", "kind", "active", "url", "code_source", "repo_url", "repo_branch", "code_path", "code_zip"] },
       { "title": "sections.authorization", "fields": ["owner", "authorized", "notes"] },
       { "title": "sections.last", "fields": ["last_score", "last_scan_at", "last_scan_id", "created_at"] }
     ]

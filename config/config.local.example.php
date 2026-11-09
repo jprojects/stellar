@@ -27,5 +27,15 @@ return [
         'osv' => true,
         // Probar si el servidor acepta TLS 1.0/1.1
         'tls_legacy' => true,
+
+        // Repositorios git privados: un token de SOLO LECTURA por servidor (ver STELLAR.md, «Repositorios git»).
+        // Los públicos no lo necesitan. El token nunca se guarda en la BD ni sale en logs ni informes.
+        'git_tokens' => [
+            // 'github.com' => 'github_pat_…',     // fine-grained, permiso Contents: Read-only
+            // 'gitlab.com' => 'glpat-…',          // read_repository
+        ],
+        // Otros servidores git permitidos (además de github.com, gitlab.com, bitbucket.org y los de git_tokens)
+        'git_hosts' => [],
+        'git_timeout' => 300,          // segundos máximos para descargar un repositorio
     ],
 ];

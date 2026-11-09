@@ -1,4 +1,5 @@
--- Stellar · tablas propias (las del núcleo están en schema.sql). Idempotente: lo ejecuta tools/stellar-migrate.php.
+-- Stellar · tablas propias (las del núcleo están en schema.sql). Idempotente: lo ejecuta tools/stellar-migrate.php,
+-- que además añade las columnas nuevas a las tablas ya creadas (ver COLUMNS allí).
 
 -- Qué se analiza: una web en producción o el código de una aplicación
 CREATE TABLE IF NOT EXISTS targets (
@@ -6,8 +7,11 @@ CREATE TABLE IF NOT EXISTS targets (
   name           VARCHAR(150) NOT NULL,
   kind           VARCHAR(10)  NOT NULL DEFAULT 'web',      -- web | code
   url            VARCHAR(500) NULL,                        -- web
+  code_source    VARCHAR(10)  NOT NULL DEFAULT 'path',     -- código: path | zip | git
   code_path      VARCHAR(500) NULL,                        -- código: carpeta del servidor (dentro de stellar.code_roots)
   code_zip       INT UNSIGNED NULL,                        -- código: id de media con un .zip
+  repo_url       VARCHAR(500) NULL,                        -- código: https://github.com/propietari/repo
+  repo_branch    VARCHAR(150) NULL,                        -- código: rama o etiqueta (vacío = la principal)
   authorized     TINYINT(1)   NOT NULL DEFAULT 0,          -- confirmación de que es nuestro o tenemos permiso
   owner          VARCHAR(150) NULL,                        -- cliente o responsable
   notes          TEXT         NULL,

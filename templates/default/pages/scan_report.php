@@ -106,7 +106,7 @@ $sev = fn (string $s): string => '<span class="qs-tag qs-tone-' . ScanReportPage
             <td>
               <a href="<?= $href ?>"><?= $this->e($t['name']) ?></a>
               <?php if (!(int) $t['authorized']): ?> <span class="qs-tag qs-tone-red"><?= $this->e($this->t('not_authorized')) ?></span><?php endif ?>
-              <div class="stl-where"><?= $this->icon($t['kind'] === 'web' ? 'globe' : 'code') ?> <?= $this->e((string) ($t['url'] ?: $t['code_path'] ?: '.zip')) ?><?= $t['owner'] ? ' · ' . $this->e($t['owner']) : '' ?></div>
+              <div class="stl-where"><?= $this->icon($t['kind'] === 'web' ? 'globe' : (($t['code_source'] ?? '') === 'git' ? 'git-branch' : 'code')) ?> <?= $this->e(ScanReportPage::where($t)) ?><?= $t['owner'] ? ' · ' . $this->e($t['owner']) : '' ?></div>
             </td>
             <td class="stl-num"><?= $t['last_scan_id'] ? (int) $t['critical'] : '—' ?></td>
             <td class="stl-num"><?= $t['last_scan_id'] ? (int) $t['high'] : '—' ?></td>
@@ -147,7 +147,7 @@ $sev = fn (string $s): string => '<span class="qs-tag qs-tone-' . ScanReportPage
       <?= $ring($scan['status'] === 'done' ? (int) $scan['score'] : null, 'is-big') ?>
       <div class="stl-score-main">
         <h3><?= $this->e($target['name']) ?> <span class="stl-muted">· <?= $this->e($this->t('scanner:kinds.' . $target['kind'])) ?></span></h3>
-        <div class="stl-where"><?= $this->e((string) ($target['url'] ?: $target['code_path'] ?: '.zip')) ?></div>
+        <div class="stl-where"><?= $this->e(ScanReportPage::where($target)) ?></div>
         <div class="stl-muted"><?= $this->e($this->t('scan_info', ['id' => $scan['id'], 'date' => $dt($scan['started_at']), 'duration' => (int) $scan['duration']])) ?></div>
         <?php if ($scan['status'] === 'done'): ?>
           <div class="stl-counts">

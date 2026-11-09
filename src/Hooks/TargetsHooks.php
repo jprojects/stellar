@@ -7,6 +7,7 @@ use Quasar\Core\Action;
 use Quasar\Core\ActionResult;
 use Quasar\Core\ModuleHooks;
 use Quasar\Core\User;
+use Quasar\Scanner\GitSource;
 use Quasar\Scanner\ScanRunner;
 
 /**
@@ -32,7 +33,24 @@ final class TargetsHooks extends ModuleHooks
             if (array_key_exists('url', $data)) {
                 $data['url'] = $url;
             }
-        } elseif (trim((string) ($data['code_path'] ?? $existing['code_path'] ?? '')) === '' && empty($data['code_zip'] ?? $existing['code_zip'] ?? null)) {
+            return null;
+        }
+        $source = (string) ($data['code_source'] ?? $existing['code_source'] ?? 'path');
+        if ($source === 'git') {
+            $repo = trim((string) ($data['repo_url'] ?? $existing['repo_url'] ?? ''));
+            if ($repo === '') {
+                return 'errors.repo_required';
+            }
+            if (!preg_match('#^(https://)?[a-z0-9.-]+\.[a-z]{2,}(/[A-Za-z0-9_.\-]+){2,}(\.git)?/?$#i', $repo)) {
+                return 'errors.repo_invalid';
+            }
+            if (array_key_exists('repo_url', $data)) {
+                $data['repo_url'] = preg_match('#^https://#i', $repo) ? rtrim($repo, '/') : 'https://' . rtrim($repo, '/');
+            }
+            if (!GitSource::validBranch(trim((string) ($data['repo_branch'] ?? $existing['repo_branch'] ?? '')))) {
+                return 'errors.branch_invalid';
+            }
+        } elseif ($source === 'path' ? trim((string) ($data['code_path'] ?? $existing['code_path'] ?? '')) === '' : empty($data['code_zip'] ?? $existing['code_zip'] ?? null)) {
             return 'errors.source_required';
         }
         return null;

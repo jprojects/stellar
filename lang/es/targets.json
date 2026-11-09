@@ -16,7 +16,10 @@
     "last_scan_at": "Último análisis",
     "last_scan_id": "Núm. análisis",
     "created_at": "Creado",
-    "where": "Dónde"
+    "where": "Dónde",
+    "code_source": "Origen del código",
+    "repo_url": "Repositorio git",
+    "repo_branch": "Rama"
   },
   "kind": {
     "web": "Web",
@@ -24,13 +27,17 @@
   },
   "placeholders": {
     "url": "https://www.ejemplo.es",
-    "code_path": "/home/usuario/Projects/aplicacion"
+    "code_path": "/home/usuario/Projects/aplicacion",
+    "repo_url": "https://github.com/empresa/aplicacion",
+    "repo_branch": "main"
   },
   "help": {
     "url": "La portada de la web. Se analiza desde fuera, sin iniciar sesión y sin hacer daño.",
     "code_path": "Tiene que estar dentro de las carpetas permitidas ('code_roots' de la configuración).",
     "code_zip": "Si el código no está en el servidor de Stellar. Se descomprime, se analiza y se borra.",
-    "authorized": "Confirmo que esta web o este código es nuestro o tenemos permiso por escrito para analizarlo. Sin esta marca no se analiza."
+    "authorized": "Confirmo que esta web o este código es nuestro o tenemos permiso por escrito para analizarlo. Sin esta marca no se analiza.",
+    "repo_url": "Público o privado. Para los privados hace falta un token de solo lectura en la configuración ('git_tokens'). Se descarga en cada análisis y se borra.",
+    "repo_branch": "Vacío = la rama principal."
   },
   "sections": {
     "target": "Qué se analiza",
@@ -54,6 +61,14 @@
   "errors": {
     "url_required": "Falta la dirección de la web.",
     "url_invalid": "La dirección de la web no es válida.",
-    "source_required": "Indica la carpeta del código o sube un .zip."
+    "source_required": "Indica la carpeta del código o sube un .zip.",
+    "repo_required": "Falta la dirección del repositorio.",
+    "repo_invalid": "La dirección del repositorio tiene que ser https://servidor/propietario/repo.",
+    "branch_invalid": "La rama no es válida."
+  },
+  "source": {
+    "path": "Carpeta del servidor",
+    "zip": "Fichero .zip",
+    "git": "Repositorio git"
   }
 }

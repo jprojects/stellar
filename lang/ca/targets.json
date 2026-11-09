@@ -16,7 +16,10 @@
     "last_scan_at": "Darrera anàlisi",
     "last_scan_id": "Núm. anàlisi",
     "created_at": "Creat",
-    "where": "On"
+    "where": "On",
+    "code_source": "Origen del codi",
+    "repo_url": "Repositori git",
+    "repo_branch": "Branca"
   },
   "kind": {
     "web": "Web",
@@ -24,13 +27,17 @@
   },
   "placeholders": {
     "url": "https://www.exemple.cat",
-    "code_path": "/home/usuari/Projects/aplicacio"
+    "code_path": "/home/usuari/Projects/aplicacio",
+    "repo_url": "https://github.com/empresa/aplicacio",
+    "repo_branch": "main"
   },
   "help": {
     "url": "La portada de la web. S'analitza des de fora, sense iniciar sessió i sense fer mal.",
     "code_path": "Ha de ser dins de les carpetes permeses ('code_roots' de la configuració).",
     "code_zip": "Si el codi no és al servidor de Stellar. Es descomprimeix, s'analitza i s'esborra.",
-    "authorized": "Confirmo que aquesta web o aquest codi és nostre o tenim permís per escrit per analitzar-lo. Sense aquesta marca no s'analitza."
+    "authorized": "Confirmo que aquesta web o aquest codi és nostre o tenim permís per escrit per analitzar-lo. Sense aquesta marca no s'analitza.",
+    "repo_url": "Públic o privat. Per als privats cal un token de només lectura a la configuració ('git_tokens'). Es descarrega a cada anàlisi i s'esborra.",
+    "repo_branch": "Buit = la branca principal."
   },
   "sections": {
     "target": "Què s'analitza",
@@ -54,6 +61,14 @@
   "errors": {
     "url_required": "Cal l'adreça de la web.",
     "url_invalid": "L'adreça de la web no és vàlida.",
-    "source_required": "Indica la carpeta del codi o puja un .zip."
+    "source_required": "Indica la carpeta del codi o puja un .zip.",
+    "repo_required": "Cal l'adreça del repositori.",
+    "repo_invalid": "L'adreça del repositori ha de ser https://servidor/propietari/repo.",
+    "branch_invalid": "La branca no és vàlida."
+  },
+  "source": {
+    "path": "Carpeta del servidor",
+    "zip": "Fitxer .zip",
+    "git": "Repositori git"
   }
 }

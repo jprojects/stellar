@@ -22,6 +22,7 @@ use Quasar\Core\Log;
  *       'user_agent' => 'Mozilla/5.0 (compatible; Stellar security scanner)',
  *       'osv' => true,                          // vulnerabilidades de dependencias con OSV.dev
  *       'tls_legacy' => true,                   // probar TLS 1.0/1.1
+ *       'git_tokens' => ['github.com' => '…'],  // repositorios privados (ver GitSource)
  *   ]
  */
 final class ScanRunner
@@ -79,7 +80,19 @@ final class ScanRunner
     private function runCode(array $target, array $opts, ?Osv $osv): array
     {
         $scanner = new CodeScanner($opts, $osv);
-        if (trim((string) $target['code_path']) !== '') {
+        $source = (string) ($target['code_source'] ?? '') ?: (trim((string) $target['code_path']) !== '' ? 'path' : 'zip');
+        if ($source === 'git') {
+            $ws = new Workspace(QS_ROOT . '/storage/scans');
+            try {
+                $repo = (new GitSource($opts))->fetch((string) $target['repo_url'], (string) ($target['repo_branch'] ?? ''), $ws);
+                $result = $scanner->run($repo['dir'], $repo['all_tracked']);
+                $result['meta']['repo'] = $repo['meta'];
+                return $result;
+            } finally {
+                $ws->cleanup();
+            }
+        }
+        if ($source === 'path') {
             $dir = (new TargetGuard($opts))->codePath((string) $target['code_path']);
             return $scanner->run($dir);
         }

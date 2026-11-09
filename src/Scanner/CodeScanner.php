@@ -38,7 +38,8 @@ final class CodeScanner
     private static function rules(): array
     {
         $src = self::PHP_SRC;
-        $safeSql = '/(->quote\(|intval\s*\(|\(int\)\s*\$_|esc_sql\(|->prepare\(|real_escape_string\()/i';
+        // Valores ya seguros, o la entrada del usuario solo se asigna (no va a la consulta)
+        $safeSql = '/(->quote\(|intval\s*\(|\(int\)\s*\(?\s*\$_|esc_sql\(|->prepare\(|real_escape_string\(|\$_(GET|POST|REQUEST)\s*=[^=])/i';
         return [
             // ---------------------------------------------------------------- PHP
             ['code.sqli', Severity::HIGH, ['php'], '/(mysql_query|mysqli_query|mysqli_multi_query|pg_query|sqlite_query|->(query|exec|prepare|fetch|fetchAll|fetchValue|fetchColumn|get_results|get_row|get_var|get_col|select|statement|unprepared)|DB::(raw|select|statement|unprepared)|(where|select|orderBy|having)Raw)\s*\(/i',
@@ -46,7 +47,8 @@ final class CodeScanner
             ['code.sqli', Severity::HIGH, ['php'], '/' . self::SQL . '/i', 'CWE-89', 'need' => '/' . $src . '/', 'not' => $safeSql],
             ['code.sqli', Severity::MEDIUM, ['php'], '/(mysql_query|mysqli_query|pg_query|->(query|exec|fetch|fetchAll|fetchValue|get_results|get_row|get_var|get_col)|DB::(raw|select|statement)|(where|select|orderBy|having)Raw)\s*\(\s*(["\'][^"\']*["\']\s*\.\s*\$|"[^"]*\{?\$[a-z_])/i',
                 'CWE-89', 'need' => '/' . self::SQL . '/i', 'not' => '/(intval|\(int\)|ident\(|quote\(|esc_sql|placeholders|implode\(\s*[\'"],\s*[\'"]\s*,\s*array_fill)/i'],
-            ['code.cmd_injection', Severity::MEDIUM, ['php'], '/\b(system|exec|shell_exec|passthru|popen|proc_open|pcntl_exec)\s*\([^)]*\$/', 'CWE-78',
+            // Funciones del sistema, no métodos (->exec() de PDO, ->system() propios) ni su declaración
+            ['code.cmd_injection', Severity::MEDIUM, ['php'], '/(?<!->)(?<!::)(?<!function )(?<![\w$])(system|exec|shell_exec|passthru|popen|proc_open|pcntl_exec)\s*\([^)]*\$/', 'CWE-78',
                 'not' => '/escapeshell(arg|cmd)/', 'stronger' => ['/' . $src . '/', Severity::CRITICAL]],
             ['code.cmd_injection', Severity::CRITICAL, ['php'], '/(=|\(|return|echo|print)\s*`[^`]*\$_(GET|POST|REQUEST|COOKIE)[^`]*`/', 'CWE-78'],
             ['code.file_inclusion', Severity::CRITICAL, ['php'], '/\b(include|require)(_once)?\b[^;]*' . $src . '/', 'CWE-98'],
@@ -59,7 +61,8 @@ final class CodeScanner
             ['code.eval', Severity::HIGH, ['php'], '/preg_replace\s*\(\s*([\'"])(.).*\2[a-z]*e[a-z]*\1/', 'CWE-95'],
             ['code.xss', Severity::MEDIUM, ['php'], '/(\b(echo|print)\b[^;]*|<\?=\s*)' . $src . '/', 'CWE-79',
                 'not' => '/(htmlspecialchars|htmlentities|esc_html|esc_attr|esc_url|intval|\(int\)|json_encode|strip_tags|\be\(|->e\(|urlencode|number_format)/'],
-            ['code.open_redirect', Severity::MEDIUM, ['php'], '/(header\s*\(\s*["\']Location:\s*["\']?\s*\.?|wp_redirect\s*\(|redirect\s*\()[^;]*' . $src . '/i', 'CWE-601',
+            // La entrada del usuario es el destino (no solo parte de una condición)
+            ['code.open_redirect', Severity::MEDIUM, ['php'], '/(header\s*\(\s*["\']Location:\s*["\']?\s*\.\s*|wp_redirect\s*\(\s*|redirect\s*\(\s*)(urldecode\s*\(\s*|rawurldecode\s*\(\s*|trim\s*\(\s*)?' . $src . '/i', 'CWE-601',
                 'not' => '/wp_safe_redirect|wp_validate_redirect/'],
             ['code.mass_assignment', Severity::MEDIUM, ['php'], '/\b(extract|parse_str)\s*\(\s*\$_(GET|POST|REQUEST|COOKIE)/', 'CWE-621'],
             ['code.weak_password_hash', Severity::HIGH, ['php'], '/\b(md5|sha1|crc32|hash\s*\(\s*[\'"](md5|sha1|sha256)[\'"])\s*\([^)]*(pass|pwd|clave|contrasenya)/i', 'CWE-916'],
@@ -118,9 +121,9 @@ final class CodeScanner
     ];
 
     /** Credenciales escritas en el código: clave = 'valor'. */
-    private const CREDENTIAL = '/(?<![\w-])(pass(word|wd)?|pwd|db_?pass(word)?|secret|client_?secret|api_?key|apikey|access_?token|auth_?token|private_?key|smtp_?pass(word)?)[\'"]?\s*(=>|=|:)\s*[\'"]([^\'"\s]{6,})[\'"]/i';
+    private const CREDENTIAL = '/(?<![\w-])(pass(word|wd)?|pwd|db_?pass(word)?|secret|client_?secret|api_?key|apikey|access_?token|auth_?token|private_?key|smtp_?pass(word)?)[\'"]?\s*(=>|=|:)\s*[\'"](?<value>[^\'"\s]{6,})[\'"]/i';
     /** Valores que no son una credencial de verdad. */
-    private const NOT_CREDENTIAL = '/^(\$|%|\{|<|\[|process\.env|getenv|env\(|os\.environ|config\(|null|none|true|false|password|passwd|secret|changeme|change_me|your[_-]|xxx|\*{3,}|example|required|string|text|hidden|current-password|new-password|sha\d+|md5|bcrypt|argon)/i';
+    private const NOT_CREDENTIAL = '/^(\/|#|\$|%|\{|<|\[|process\.env|getenv|env\(|os\.environ|config\(|null|none|true|false|password|passwd|secret|changeme|change_me|your[_-]|xxx|\*{3,}|example|required|string|text|hidden|current-password|new-password|sha\d+|md5|bcrypt|argon)/i';
 
     /** @var array<string,array{check:string,severity:string,cwe:?string,file:string,lines:list<string>,vars:array}> */
     private array $groups = [];
@@ -128,6 +131,7 @@ final class CodeScanner
     private array $notes = [];
     /** @var array<string,bool>|null ficheros que están en git (si es un repositorio) */
     private ?array $tracked = null;
+    private bool $allTracked = false;
     private int $files = 0;
     private int $vendored = 0;
     private int $lines = 0;
@@ -137,11 +141,15 @@ final class CodeScanner
     {
     }
 
-    /** @return array{findings:list<Finding>,notes:list<array>,meta:array} */
-    public function run(string $dir): array
+    /**
+     * @param bool $allTracked todos los ficheros son del repositorio (el .zip de una rama de GitHub)
+     * @return array{findings:list<Finding>,notes:list<array>,meta:array}
+     */
+    public function run(string $dir, bool $allTracked = false): array
     {
         $dir = rtrim($dir, '/');
-        $this->tracked = $this->gitFiles($dir);
+        $this->allTracked = $allTracked;
+        $this->tracked = $allTracked ? [] : $this->gitFiles($dir);
         $maxFiles = (int) ($this->options['max_files'] ?? 20000);
         $maxSize = (int) ($this->options['max_file_size'] ?? 1048576);
         $lockfiles = [];
@@ -226,7 +234,7 @@ final class CodeScanner
         $this->lines += count($lines);
 
         if (preg_match('/^\.env(\.(?!example|sample|dist|template).+)?$/', basename($rel)) && preg_match('/^\s*[A-Z_]*(PASS|SECRET|KEY|TOKEN)[A-Z_]*\s*=\s*\S{4,}/m', $content)) {
-            $committed = $this->tracked !== null && isset($this->tracked[$rel]);
+            $committed = $this->allTracked || ($this->tracked !== null && isset($this->tracked[$rel]));
             $this->group('code.env_file', $committed ? Severity::HIGH : Severity::MEDIUM, 'CWE-538', $rel, 'L1: ' . basename($rel), ['committed' => $committed ? 'git' : '-']);
         }
 
@@ -243,8 +251,9 @@ final class CodeScanner
                     $this->group('code.secret', Severity::CRITICAL, 'CWE-798', $rel, "L$n: " . trim($line), ['kind' => $kind], $kind);
                 }
             }
-            if (!$isLangFile && !$isExample && !$comment && preg_match(self::CREDENTIAL, $line, $m) && !preg_match(self::NOT_CREDENTIAL, $m[5])
-                && !preg_match('/^[a-z_]+(\.[a-z_]+)+$/i', $m[5])) {
+            // Fuera: variables, rutas, claves de idioma (a.b.c) y palabras sueltas ('pass' => 'Correcte' es una etiqueta)
+            if (!$isLangFile && !$isExample && !$comment && preg_match(self::CREDENTIAL, $line, $m) && !preg_match(self::NOT_CREDENTIAL, $m['value'])
+                && !preg_match('/^[a-z_]+(\.[a-z_]+)+$/i', $m['value']) && !preg_match('/^(\p{Lu}\p{Ll}+|\p{Lu}+|\p{Ll}+)$/u', $m['value'])) {
                 $this->group('code.hardcoded_credential', $isTest ? Severity::LOW : Severity::HIGH, 'CWE-798', $rel, "L$n: " . trim($line));
             }
             if ($comment || $isTest || $isVendored) {

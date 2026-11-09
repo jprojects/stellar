@@ -1,7 +1,22 @@
 {
-  "kinds": { "web": "web", "code": "código" },
-  "severity": { "critical": "Crítica", "high": "Alta", "medium": "Media", "low": "Baja", "info": "Informativa" },
-  "severity_n": { "critical": "críticas", "high": "altas", "medium": "medias", "low": "bajas", "info": "informativas" },
+  "kinds": {
+    "web": "web",
+    "code": "código"
+  },
+  "severity": {
+    "critical": "Crítica",
+    "high": "Alta",
+    "medium": "Media",
+    "low": "Baja",
+    "info": "Informativa"
+  },
+  "severity_n": {
+    "critical": "críticas",
+    "high": "altas",
+    "medium": "medias",
+    "low": "bajas",
+    "info": "informativas"
+  },
   "errors": {
     "not_authorized": "Este objetivo no tiene marcada la autorización: solo se analizan webs y código propios o con permiso por escrito.",
     "bad_url": "La dirección «{url}» no es válida.",
@@ -15,7 +30,15 @@
     "no_zip_ext": "El PHP del servidor no tiene la extensión zip.",
     "bad_zip": "El fichero .zip no es válido o contiene rutas no permitidas.",
     "zip_too_big": "El fichero .zip es demasiado grande para analizarlo.",
-    "internal": "Error interno del análisis: {error}"
+    "internal": "Error interno del análisis: {error}",
+    "repo_url": "La dirección del repositorio «{url}» no es válida: tiene que ser https://servidor/propietario/repo.",
+    "repo_host": "El servidor git «{host}» no está permitido. Permitidos: {hosts} (añade más en 'git_hosts' o 'git_tokens').",
+    "repo_branch": "La rama «{branch}» no es válida o no existe.",
+    "repo_access": "No se puede acceder al repositorio {repo}: no existe o es privado y falta el token (o no tiene acceso). Revisa 'git_tokens' en la configuración.",
+    "repo_access_branch": "No se encuentra el repositorio {repo} o la rama «{branch}» (o el token no tiene acceso).",
+    "repo_failed": "No se ha podido descargar el repositorio: {error}",
+    "repo_too_big": "El repositorio es demasiado grande para analizarlo.",
+    "no_git": "El servidor no tiene git y este repositorio no es de GitHub: no se puede descargar."
   },
   "notes": {
     "request_limit": "Se ha llegado al límite de {max} peticiones: algunos controles no se han hecho.",
@@ -61,73 +84,334 @@
     "limits_code": "El análisis es por patrones, línea a línea: no sigue los datos entre funciones ni ficheros, ni revisa permisos, lógica de negocio o configuración del servidor. Que no salga un problema no quiere decir que no lo haya.",
     "ask": "Qué te pedimos",
     "ask_web": "1. Un plan ordenado por prioridad (qué hacer hoy, esta semana y cuando se pueda).\n2. Para cada hallazgo real, el cambio exacto a aplicar y cómo comprobar que ha quedado resuelto (por ejemplo, con curl).\n3. Los que creas que son falsos positivos, con el motivo, para que los podamos marcar en Stellar.",
-    "ask_code": "1. Un plan ordenado por prioridad.\n2. Para cada hallazgo real, el cambio concreto (diff) y, si hace falta, una prueba que lo verifique.\n3. Los que creas que son falsos positivos, con el motivo, para que los podamos marcar en Stellar.\n4. Si ves otros problemas en el código que enseñamos, dilos."
+    "ask_code": "1. Un plan ordenado por prioridad.\n2. Para cada hallazgo real, el cambio concreto (diff) y, si hace falta, una prueba que lo verifique.\n3. Los que creas que son falsos positivos, con el motivo, para que los podamos marcar en Stellar.\n4. Si ves otros problemas en el código que enseñamos, dilos.",
+    "repo": "Repositorio"
   },
   "checks": {
-    "web.no_https": { "title": "La web no tiene HTTPS", "detail": "La web solo funciona por HTTP: todo lo que se envía (contraseñas, formularios, cookies de sesión) viaja sin cifrar y se puede leer o modificar por el camino. Los navegadores la marcan como «No segura».", "fix": "Instala un certificado (Let's Encrypt es gratuito; en los hostings suele ser un clic en cPanel/Plesk), redirige todo el tráfico HTTP a HTTPS con un 301 y después activa HSTS." },
-    "web.no_https_redirect": { "title": "HTTP no redirige a HTTPS", "detail": "La web tiene HTTPS pero también responde por HTTP sin redirigir: quien entre escribiendo el dominio o por un enlace antiguo navega sin cifrar.", "fix": "Redirige todo HTTP a HTTPS con un 301. Apache (.htaccess): `RewriteEngine On`, `RewriteCond %{HTTPS} off`, `RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]`. Nginx: un `server { listen 80; return 301 https://$host$request_uri; }`." },
-    "web.form_http": { "title": "Formulario que envía datos sin cifrar", "detail": "Hay un formulario (o un campo de contraseña) que se envía por HTTP: los datos viajan en claro.", "fix": "Sirve la página y el `action` del formulario por HTTPS (cambia `http://` por `https://` o usa rutas relativas) y redirige HTTP a HTTPS." },
-    "web.tls_invalid": { "title": "Certificado TLS no válido", "detail": "El navegador no confía en el certificado ({error}): los visitantes ven un aviso de seguridad y el cifrado no protege contra suplantaciones.", "fix": "Instala un certificado válido para este dominio (también el www si se accede) emitido por una autoridad reconocida, con la cadena intermedia completa. Compruébalo con `openssl s_client -connect dominio:443 -servername dominio`." },
-    "web.tls_expired": { "title": "Certificado TLS caducado", "detail": "El certificado caducó el {date}: los navegadores bloquean la web con un aviso.", "fix": "Renueva el certificado ahora y activa la renovación automática (certbot, AutoSSL del hosting…)." },
-    "web.tls_expiring": { "title": "El certificado TLS caduca dentro de {days} días", "detail": "El certificado caduca el {date}. Si no se renueva, la web quedará bloqueada por los navegadores.", "fix": "Comprueba que la renovación automática funciona (certbot renew --dry-run, AutoSSL…) o renuévalo a mano antes del {date}." },
-    "web.tls_legacy": { "title": "Acepta {protocol}, un protocolo obsoleto", "detail": "El servidor acepta {protocol}, retirado en 2021 (RFC 8996) por sus debilidades. Ningún navegador actual lo necesita.", "fix": "Deja solo TLS 1.2 y 1.3. Apache: `SSLProtocol -all +TLSv1.2 +TLSv1.3`. Nginx: `ssl_protocols TLSv1.2 TLSv1.3;`. En un hosting compartido, pídelo al proveedor o cámbialo en el panel." },
-    "web.hsts_missing": { "title": "Falta HSTS (Strict-Transport-Security)", "detail": "Sin HSTS, el navegador puede hacer la primera conexión por HTTP y alguien en la misma red puede interceptarla antes de la redirección.", "fix": "Añade la cabecera `Strict-Transport-Security: max-age=31536000; includeSubDomains` a las respuestas HTTPS (Apache: `Header always set …` con mod_headers; Nginx: `add_header … always;`). Comprueba antes que todos los subdominios tienen HTTPS." },
-    "web.hsts_weak": { "title": "HSTS con una duración corta ({days} días)", "detail": "El HSTS solo se recuerda {days} días; lo recomendado es al menos 6 meses.", "fix": "Sube el `max-age` a 31536000 (un año)." },
-    "web.csp_missing": { "title": "Falta la política de seguridad de contenido (CSP)", "detail": "Sin Content-Security-Policy, si alguien consigue inyectar un script (XSS) el navegador lo ejecuta sin ningún límite.", "fix": "Define una CSP empezando en modo informe (`Content-Security-Policy-Report-Only`) y ajústala a los dominios que usa la web; por ejemplo `default-src 'self'; script-src 'self' https://dominios-necesarios; object-src 'none'; base-uri 'self'; frame-ancestors 'self'`. Cuando no dé errores, pásala a `Content-Security-Policy`." },
-    "web.csp_weak": { "title": "La CSP permite scripts peligrosos ({issues})", "detail": "La política de contenido permite {issues}, lo que anula buena parte de la protección contra XSS.", "fix": "Quita `'unsafe-inline'`/`'unsafe-eval'` del `script-src`: mueve los scripts en línea a ficheros o usa nonces (`'nonce-…'`) o hashes, y limita los orígenes a dominios concretos." },
-    "web.clickjacking": { "title": "La web se puede incrustar en otra (clickjacking)", "detail": "No hay X-Frame-Options ni `frame-ancestors`: otra web puede cargar esta dentro de un iframe invisible y engañar al usuario para que haga clic donde no quiere.", "fix": "Añade `X-Frame-Options: SAMEORIGIN` y, en la CSP, `frame-ancestors 'self'`." },
-    "web.nosniff_missing": { "title": "Falta X-Content-Type-Options: nosniff", "detail": "Sin esta cabecera, el navegador puede interpretar un fichero subido (una imagen, un texto) como script o HTML.", "fix": "Añade `X-Content-Type-Options: nosniff` a todas las respuestas." },
-    "web.referrer_missing": { "title": "Falta Referrer-Policy", "detail": "Sin política, la dirección completa de la página (que puede llevar tokens o datos en los parámetros) se envía a las webs externas enlazadas.", "fix": "Añade `Referrer-Policy: strict-origin-when-cross-origin`." },
-    "web.permissions_missing": { "title": "Falta Permissions-Policy", "detail": "No se limitan las funciones del navegador (cámara, micrófono, geolocalización…) que pueden usar la web y los iframes de terceros.", "fix": "Añade, por ejemplo, `Permissions-Policy: camera=(), microphone=(), geolocation=()` (dejando solo lo que la web necesite)." },
-    "web.server_version": { "title": "El servidor dice su versión ({header})", "detail": "La cabecera {header} muestra «{value}»: facilita saber qué vulnerabilidades conocidas probar.", "fix": "Ocúltala. PHP: `expose_php = Off` en el php.ini. Apache: `ServerTokens Prod` y `ServerSignature Off`. Nginx: `server_tokens off;`. También se puede quitar con `Header unset X-Powered-By`. Y, sobre todo, comprueba que esa versión aún tiene soporte." },
-    "web.cookie_flags": { "title": "Cookie «{cookie}» sin {missing}", "detail": "La cookie {cookie} no lleva {missing}. Secure evita que se envíe por HTTP; HttpOnly, que un script (XSS) la pueda leer; SameSite, que se envíe desde otras webs (CSRF).", "fix": "Créala con `Secure; HttpOnly; SameSite=Lax` (o `Strict`). PHP: `session.cookie_secure=1`, `session.cookie_httponly=1`, `session.cookie_samesite=Lax`, o las opciones de `setcookie()`. Si es de un plugin o servicio externo, revisa su configuración." },
-    "web.mixed_content": { "title": "Contenido mixto: {count} recursos por HTTP", "detail": "La página es HTTPS pero carga {count} recursos por HTTP. El navegador los bloquea o avisa, y un script cargado así podría modificarse por el camino.", "fix": "Cambia esas direcciones a `https://` (o rutas relativas). En WordPress, revisa la URL del sitio y haz un buscar-y-reemplazar en la base de datos. Como red de seguridad, CSP `upgrade-insecure-requests`." },
-    "web.sri_missing": { "title": "{count} scripts externos sin integridad (SRI)", "detail": "Se cargan scripts de otros dominios sin el atributo `integrity`: si ese servidor o CDN fuera comprometido, el código malicioso se ejecutaría en la web.", "fix": "Añade `integrity=\"sha384-…\" crossorigin=\"anonymous\"` a los `<script>` de CDN con versión fija (srihash.org da el valor) o sirve los ficheros desde el mismo dominio." },
-    "web.vcs_exposed": { "title": "Repositorio git/svn público ({path})", "detail": "Se puede descargar {path}: con herramientas automáticas se reconstruye todo el código fuente y el historial, incluidas contraseñas que se hayan escrito alguna vez.", "fix": "Bloquea el acceso a las carpetas de control de versiones (Apache: `RedirectMatch 404 /\\.(git|svn|hg)`; Nginx: `location ~ /\\.(git|svn|hg) { deny all; }`) o, mejor, despliega sin la carpeta .git. Después cambia todas las contraseñas y claves que haya en el historial." },
-    "web.env_exposed": { "title": "Fichero de configuración .env público ({path})", "detail": "Cualquiera puede descargar {path}, que suele tener las contraseñas de la base de datos, claves de API y la clave de la aplicación.", "fix": "Bloquea los ficheros que empiezan por punto (Apache: `<FilesMatch \"^\\.\"> Require all denied </FilesMatch>`; Nginx: `location ~ /\\. { deny all; }`) y pon el document root en la carpeta public/. **Cambia ahora todas las credenciales** que haya: hay que considerarlas filtradas." },
-    "web.config_backup": { "title": "Copia de un fichero de configuración descargable ({path})", "detail": "{path} es una copia de la configuración que el servidor no ejecuta como PHP y sirve como texto, con las contraseñas de la base de datos.", "fix": "Bórrala del servidor, bloquea extensiones de copia (`.bak`, `.old`, `.save`, `~`, `.txt` de configuración) y cambia las credenciales que contenía." },
-    "web.backup_exposed": { "title": "Copia de seguridad descargable ({path})", "detail": "Se puede descargar {path}, una copia de la web o de la base de datos (datos personales, usuarios, contraseñas).", "fix": "Saca las copias del directorio público (guárdalas fuera del document root o en otro servicio) y revisa si hay más ficheros parecidos. Si contiene datos personales, valora si hay que notificarlo (RGPD)." },
-    "web.ftp_config_exposed": { "title": "Configuración de FTP/SFTP del editor pública ({path})", "detail": "{path} es la configuración de subida del editor (VS Code/Sublime) y suele tener el servidor, el usuario y la contraseña de FTP/SFTP.", "fix": "Bórrala del servidor, añádela al .gitignore y a las exclusiones de subida, y cambia la contraseña de FTP/SFTP." },
-    "web.htpasswd_exposed": { "title": "Fichero .htpasswd público", "detail": "Se pueden descargar los usuarios y las contraseñas cifradas del acceso protegido; las débiles se pueden romper.", "fix": "Mueve el .htpasswd fuera del document root (o bloquea `^\\.ht`) y cambia las contraseñas." },
-    "web.adminer_exposed": { "title": "Adminer accesible ({path})", "detail": "Hay un gestor de bases de datos a la vista: es objetivo habitual de ataques de fuerza bruta y ha tenido vulnerabilidades graves.", "fix": "Bórralo cuando no se use o protégelo con otra capa (IP permitidas, contraseña HTTP)." },
-    "web.phpinfo_exposed": { "title": "Página phpinfo() pública ({path})", "detail": "{path} muestra la configuración entera de PHP y del servidor: rutas, versiones, módulos y a veces variables de entorno con secretos.", "fix": "Borra el fichero." },
-    "web.log_exposed": { "title": "Fichero de registro público ({path})", "detail": "{path} es un registro de errores descargable: revela rutas del servidor, consultas, versiones y a veces datos de usuarios.", "fix": "Bórralo, guarda los registros fuera del document root (WordPress: `WP_DEBUG_LOG` con una ruta privada, o `WP_DEBUG` a false en producción) y bloquea `*.log`." },
-    "web.server_status": { "title": "Estado del servidor Apache público (/server-status)", "detail": "Muestra en tiempo real las peticiones que recibe el servidor, con direcciones, IP de los visitantes y parámetros.", "fix": "Limita `/server-status` a localhost (`Require local`) o desactiva mod_status." },
-    "web.phpmyadmin_exposed": { "title": "phpMyAdmin accesible ({path})", "detail": "phpMyAdmin a la vista es un objetivo habitual de fuerza bruta y de vulnerabilidades.", "fix": "Sácalo de la web pública o limítalo por IP / con una segunda contraseña HTTP." },
-    "web.debug_mode": { "title": "Herramienta de depuración en producción ({path})", "detail": "{path} es una herramienta de desarrollo (perfilador o panel de depuración) que muestra peticiones, consultas, variables y a veces secretos.", "fix": "Desactiva el modo de desarrollo en producción (Symfony: `APP_ENV=prod`; Laravel: `APP_DEBUG=false` y Telescope solo en local)." },
-    "web.junk_files": { "title": "Ficheros del ordenador del desarrollador publicados ({path})", "detail": "{path} revela nombres de ficheros y carpetas internos del proyecto.", "fix": "Bórralos, añádelos al .gitignore y a las exclusiones de subida." },
-    "web.dir_listing": { "title": "Listado de la carpeta {path} visible", "detail": "El servidor enseña todos los ficheros de {path}: cualquiera puede ver y descargar documentos que no están enlazados.", "fix": "Desactiva los listados: Apache `Options -Indexes` (en el .htaccess); Nginx `autoindex off;`. Revisa qué hay en la carpeta." },
-    "web.cors_reflect": { "title": "CORS acepta cualquier origen (credenciales: {credentials})", "detail": "El servidor responde a cualquier web externa con Access-Control-Allow-Origin igual a su origen (Allow-Credentials: {credentials}). Si es «true», una web maliciosa puede leer datos del usuario con su sesión.", "fix": "Responde solo a los orígenes de una lista blanca concreta y no uses `Access-Control-Allow-Credentials: true` con orígenes no fijos." },
-    "web.reflected_input": { "title": "La web devuelve lo que se escribe en la dirección sin escapar (posible XSS)", "detail": "Un parámetro con comillas y `<` se ha devuelto tal cual dentro del HTML. Muy probablemente hay un XSS reflejado: un enlace preparado puede ejecutar código en el navegador de quien lo abra.", "fix": "Escapa siempre la salida según el contexto (`htmlspecialchars($valor, ENT_QUOTES, 'UTF-8')` en PHP, `esc_html()`/`esc_attr()` en WordPress) y añade una CSP. Busca dónde se usa el parámetro en el código." },
-    "web.error_disclosure": { "title": "Mensajes de error internos visibles ({kind})", "detail": "La web muestra errores internos ({kind}) a los visitantes: rutas, consultas SQL o trazas que ayudan a atacarla, y que pueden indicar una inyección.", "fix": "En producción, `display_errors = Off` y `log_errors = On` (registro fuera de la web); desactiva el modo debug del framework. Si es un error SQL provocado por las comillas, revisa la consulta: probablemente no usa consultas preparadas." },
-    "web.trace_enabled": { "title": "Método TRACE activado", "detail": "El servidor responde a TRACE devolviendo la petición, lo que combinado con otros fallos puede servir para robar cookies (XST).", "fix": "Apache: `TraceEnable Off`. Nginx no lo soporta por defecto; revisa el proxy." },
-    "web.cms_version": { "title": "Se ve la versión de {cms} ({version})", "detail": "La web dice que usa {cms} {version}. Si no es la última, tiene vulnerabilidades conocidas y públicas.", "fix": "Actualiza {cms} a la última versión (y los plugins/temas) y oculta la versión (WordPress: quitar el meta generator y el readme.html)." },
-    "web.wp_plugins": { "title": "Plugins de WordPress detectados ({count})", "detail": "Plugins visibles desde fuera: {plugins}.", "fix": "Comprueba que todos están actualizados y sin vulnerabilidades conocidas (wpscan.com/plugins, patchstack.com/database) y borra los que no se usen." },
-    "web.wp_xmlrpc": { "title": "XML-RPC de WordPress activo", "detail": "xmlrpc.php acepta peticiones: permite probar muchas contraseñas en una sola petición (system.multicall) y ataques de pingback.", "fix": "Si no se usa (Jetpack, la app móvil), desactívalo: plugin, filtro `add_filter('xmlrpc_enabled', '__return_false');` o bloquea `xmlrpc.php` en el servidor." },
-    "web.wp_user_enum": { "title": "Se pueden listar los usuarios de WordPress", "detail": "La API REST muestra los nombres de usuario ({users}): es la mitad del usuario y contraseña para un ataque de fuerza bruta.", "fix": "Limita el endpoint `/wp-json/wp/v2/users` a usuarios identificados (filtro `rest_endpoints` o un plugin de seguridad), bloquea `?author=N` y activa el límite de intentos y el 2FA." },
-    "web.security_txt": { "title": "Falta security.txt", "detail": "No hay /.well-known/security.txt, el fichero estándar (RFC 9116) donde quien encuentra una vulnerabilidad sabe a quién avisar.", "fix": "Publica `/.well-known/security.txt` con al menos `Contact: mailto:seguridad@…` y `Expires: …`." },
-    "web.robots_paths": { "title": "El robots.txt señala rutas sensibles", "detail": "El robots.txt lista rutas que parecen privadas ({paths}). No protege nada: solo lo anuncia.", "fix": "No pongas rutas privadas en el robots.txt; protégelas con autenticación." },
-    "web.js_vulnerable": { "title": "{package} {version} tiene {count} vulnerabilidades conocidas", "detail": "La web carga la librería JavaScript {package} {version}, con {count} vulnerabilidades publicadas (ver la prueba).", "fix": "Actualiza {package} al menos a la {fixed} (mejor la última estable) y comprueba que la web sigue funcionando. Si la trae el tema o un plugin, actualízalo." },
-    "code.sqli": { "title": "Posible inyección SQL en {file}", "detail": "Hay consultas SQL montadas concatenando variables ({count} líneas). Si alguna viene del usuario sin validar, puede leer o modificar toda la base de datos.", "fix": "Usa consultas preparadas con parámetros (`?` o `:nombre`) para todos los valores; para nombres de columnas u orden, una lista blanca. No basta con escapar." },
-    "code.cmd_injection": { "title": "Posible ejecución de órdenes del sistema en {file}", "detail": "Se ejecutan órdenes del sistema con variables ({count} líneas). Si alguna viene del usuario, puede ejecutar cualquier cosa en el servidor.", "fix": "Evita el shell: usa funciones del lenguaje o pasa los argumentos como lista (proc_open con array, `spawn` sin `shell`, `subprocess.run([...])`). Si no hay alternativa, `escapeshellarg()` en cada argumento y lista blanca de valores." },
-    "code.file_inclusion": { "title": "Include/require con datos del usuario en {file}", "detail": "Se carga un fichero PHP con un nombre que viene de la petición: puede permitir ejecutar código o leer ficheros del servidor.", "fix": "No incluyas nunca rutas que vengan del usuario: usa una lista blanca (`match`/array de valores permitidos → fichero)." },
-    "code.path_traversal": { "title": "Acceso a ficheros con rutas del usuario en {file}", "detail": "Se abren, leen o borran ficheros con una ruta que viene de la petición ({count} líneas): con `../` se puede llegar a cualquier fichero.", "fix": "Usa identificadores en lugar de rutas, o `basename()` + `realpath()` y comprueba que el resultado está dentro de la carpeta permitida." },
-    "code.unserialize": { "title": "Deserialización insegura en {file}", "detail": "Se deserializan datos ({count} líneas) con `unserialize`/`pickle`/`yaml.load`. Con datos de un atacante puede acabar ejecutando código.", "fix": "Usa JSON (`json_decode`, `json.loads`). Si hace falta unserialize en PHP, `['allowed_classes' => false]`; en Python, `yaml.safe_load`." },
-    "code.eval": { "title": "Uso de eval o equivalente en {file}", "detail": "Se ejecuta código construido en tiempo de ejecución ({count} líneas). Si entra cualquier dato externo, es ejecución de código remota.", "fix": "Reescríbelo sin eval (mapas de funciones, JSON.parse, etc.)." },
-    "code.xss": { "title": "Posible XSS: salida sin escapar en {file}", "detail": "Se muestran en la página datos sin escapar ({count} líneas), en algunos casos directamente de la petición. Puede permitir ejecutar scripts en el navegador de otros usuarios.", "fix": "Escapa según el contexto: PHP `htmlspecialchars($v, ENT_QUOTES, 'UTF-8')` (o `esc_html`/`esc_attr` en WordPress); JavaScript `textContent` en lugar de `innerHTML`, o DOMPurify si hace falta HTML." },
-    "code.open_redirect": { "title": "Redirección abierta en {file}", "detail": "Se redirige a una dirección que viene de la petición: se puede usar para enlaces de phishing que parecen de vuestra web.", "fix": "Redirige solo a rutas internas (empieza por `/` y no por `//`) o a una lista blanca de dominios (`wp_safe_redirect` en WordPress)." },
-    "code.mass_assignment": { "title": "extract()/parse_str() con datos de la petición en {file}", "detail": "Se convierten parámetros de la petición en variables: un atacante puede sobrescribir cualquier variable (permisos, rutas…).", "fix": "Lee solo los campos que necesitas, explícitamente (`$_POST['nombre'] ?? ''`)." },
-    "code.weak_password_hash": { "title": "Contraseñas con un hash débil en {file}", "detail": "Se usa MD5/SHA1/SHA256 para contraseñas: con una filtración, se rompen en minutos.", "fix": "Usa `password_hash()` / `password_verify()` (bcrypt o Argon2) y migra los hashes antiguos en el siguiente inicio de sesión." },
-    "code.upload": { "title": "Subida de ficheros con el nombre original en {file}", "detail": "Se guarda el fichero subido con el nombre que envía el usuario: puede subir un `.php` y ejecutarlo, o sobrescribir ficheros.", "fix": "Genera tú el nombre (aleatorio), valida la extensión y el tipo real (finfo) contra una lista blanca y guárdalo fuera del document root o en una carpeta sin ejecución de PHP." },
-    "code.weak_random": { "title": "Aleatorio no seguro para tokens en {file}", "detail": "Se generan tokens, contraseñas o códigos con `rand`/`mt_rand`/`uniqid`/`Math.random`, que son previsibles.", "fix": "Usa `random_bytes()` / `random_int()` (PHP), `crypto.randomBytes`/`crypto.getRandomValues` (JS) o `secrets` (Python)." },
-    "code.loose_compare": { "title": "Comparación no estricta de tokens o hashes en {file}", "detail": "Se comparan tokens, hashes o contraseñas con `==`: por las conversiones de tipo de PHP, valores distintos pueden parecer iguales, y el tiempo de respuesta puede filtrar el valor.", "fix": "Usa `hash_equals()` para tokens y hashes y `password_verify()` para contraseñas." },
-    "code.prototype_pollution": { "title": "Posible contaminación de prototipos en {file}", "detail": "Se asignan propiedades con claves que vienen de la petición: con `__proto__` se pueden alterar todos los objetos de la aplicación.", "fix": "Rechaza las claves `__proto__`, `constructor` y `prototype`, o usa `Map`/`Object.create(null)`." },
-    "code.debug_enabled": { "title": "Modo de depuración activado en {file}", "detail": "La configuración muestra errores o activa el modo debug: en producción revela información interna.", "fix": "Desactívalo en producción (que dependa del entorno): `display_errors=Off`, `APP_DEBUG=false`, `DEBUG=False`." },
-    "code.tls_verify_off": { "title": "Conexiones HTTPS sin verificar el certificado en {file}", "detail": "Se desactiva la verificación del certificado ({count} líneas): cualquiera puede hacerse pasar por el servidor remoto y leer o cambiar los datos (claves de API incluidas).", "fix": "Quita las opciones que desactivan la verificación; si el problema era la cadena de certificados, configura el fichero de CA (`CURLOPT_CAINFO`) en lugar de desactivarla." },
-    "code.cors_any": { "title": "CORS abierto a cualquier origen en {file}", "detail": "Se responde `Access-Control-Allow-Origin: *`: cualquier web puede leer esas respuestas desde el navegador de los usuarios.", "fix": "Si la API es pública y sin datos privados, puede ser correcto; si no, limítalo a una lista de orígenes." },
-    "code.secret": { "title": "Clave o token ({kind}) escrito en el código en {file}", "detail": "Hay una credencial real ({kind}) en el código. Todo el que tenga acceso al código o al repositorio (o a una copia filtrada) la puede usar.", "fix": "Revócala y genera una nueva **ahora**, muévela a una variable de entorno o a un fichero de configuración fuera del repositorio (como `config.local.php` o `.env` en el .gitignore) y, si está en un repositorio, bórrala del historial (git filter-repo)." },
-    "code.hardcoded_credential": { "title": "Contraseña o clave escrita en el código en {file}", "detail": "Hay credenciales escritas directamente ({count} líneas).", "fix": "Muévelas a configuración fuera del repositorio (variables de entorno, `config.local.php` o `.env` ignorados por git) y cámbialas si el código se ha compartido." },
-    "code.env_file": { "title": "Fichero de secretos dentro del proyecto ({file})", "detail": "{file} contiene contraseñas o claves y forma parte del código entregado (si está en el repositorio git, quedan en el historial).", "fix": "Sácalo del repositorio (`git rm --cached`), añádelo al .gitignore, deja un `.env.example` sin valores y cambia las credenciales si el repositorio se ha compartido." },
-    "code.dep_vulnerable": { "title": "Dependencia vulnerable: {package} {version}", "detail": "{package} {version} ({ecosystem}, en {file}) tiene {vulns} vulnerabilidades conocidas (ver la prueba).", "fix": "Actualiza {package} al menos a la {fixed} (`composer update {package}` / `npm install {package}@latest` / `pip install -U {package}`), pasa los tests y vuelve a analizar." }
+    "web.no_https": {
+      "title": "La web no tiene HTTPS",
+      "detail": "La web solo funciona por HTTP: todo lo que se envía (contraseñas, formularios, cookies de sesión) viaja sin cifrar y se puede leer o modificar por el camino. Los navegadores la marcan como «No segura».",
+      "fix": "Instala un certificado (Let's Encrypt es gratuito; en los hostings suele ser un clic en cPanel/Plesk), redirige todo el tráfico HTTP a HTTPS con un 301 y después activa HSTS."
+    },
+    "web.no_https_redirect": {
+      "title": "HTTP no redirige a HTTPS",
+      "detail": "La web tiene HTTPS pero también responde por HTTP sin redirigir: quien entre escribiendo el dominio o por un enlace antiguo navega sin cifrar.",
+      "fix": "Redirige todo HTTP a HTTPS con un 301. Apache (.htaccess): `RewriteEngine On`, `RewriteCond %{HTTPS} off`, `RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]`. Nginx: un `server { listen 80; return 301 https://$host$request_uri; }`."
+    },
+    "web.form_http": {
+      "title": "Formulario que envía datos sin cifrar",
+      "detail": "Hay un formulario (o un campo de contraseña) que se envía por HTTP: los datos viajan en claro.",
+      "fix": "Sirve la página y el `action` del formulario por HTTPS (cambia `http://` por `https://` o usa rutas relativas) y redirige HTTP a HTTPS."
+    },
+    "web.tls_invalid": {
+      "title": "Certificado TLS no válido",
+      "detail": "El navegador no confía en el certificado ({error}): los visitantes ven un aviso de seguridad y el cifrado no protege contra suplantaciones.",
+      "fix": "Instala un certificado válido para este dominio (también el www si se accede) emitido por una autoridad reconocida, con la cadena intermedia completa. Compruébalo con `openssl s_client -connect dominio:443 -servername dominio`."
+    },
+    "web.tls_expired": {
+      "title": "Certificado TLS caducado",
+      "detail": "El certificado caducó el {date}: los navegadores bloquean la web con un aviso.",
+      "fix": "Renueva el certificado ahora y activa la renovación automática (certbot, AutoSSL del hosting…)."
+    },
+    "web.tls_expiring": {
+      "title": "El certificado TLS caduca dentro de {days} días",
+      "detail": "El certificado caduca el {date}. Si no se renueva, la web quedará bloqueada por los navegadores.",
+      "fix": "Comprueba que la renovación automática funciona (certbot renew --dry-run, AutoSSL…) o renuévalo a mano antes del {date}."
+    },
+    "web.tls_legacy": {
+      "title": "Acepta {protocol}, un protocolo obsoleto",
+      "detail": "El servidor acepta {protocol}, retirado en 2021 (RFC 8996) por sus debilidades. Ningún navegador actual lo necesita.",
+      "fix": "Deja solo TLS 1.2 y 1.3. Apache: `SSLProtocol -all +TLSv1.2 +TLSv1.3`. Nginx: `ssl_protocols TLSv1.2 TLSv1.3;`. En un hosting compartido, pídelo al proveedor o cámbialo en el panel."
+    },
+    "web.hsts_missing": {
+      "title": "Falta HSTS (Strict-Transport-Security)",
+      "detail": "Sin HSTS, el navegador puede hacer la primera conexión por HTTP y alguien en la misma red puede interceptarla antes de la redirección.",
+      "fix": "Añade la cabecera `Strict-Transport-Security: max-age=31536000; includeSubDomains` a las respuestas HTTPS (Apache: `Header always set …` con mod_headers; Nginx: `add_header … always;`). Comprueba antes que todos los subdominios tienen HTTPS."
+    },
+    "web.hsts_weak": {
+      "title": "HSTS con una duración corta ({days} días)",
+      "detail": "El HSTS solo se recuerda {days} días; lo recomendado es al menos 6 meses.",
+      "fix": "Sube el `max-age` a 31536000 (un año)."
+    },
+    "web.csp_missing": {
+      "title": "Falta la política de seguridad de contenido (CSP)",
+      "detail": "Sin Content-Security-Policy, si alguien consigue inyectar un script (XSS) el navegador lo ejecuta sin ningún límite.",
+      "fix": "Define una CSP empezando en modo informe (`Content-Security-Policy-Report-Only`) y ajústala a los dominios que usa la web; por ejemplo `default-src 'self'; script-src 'self' https://dominios-necesarios; object-src 'none'; base-uri 'self'; frame-ancestors 'self'`. Cuando no dé errores, pásala a `Content-Security-Policy`."
+    },
+    "web.csp_weak": {
+      "title": "La CSP permite scripts peligrosos ({issues})",
+      "detail": "La política de contenido permite {issues}, lo que anula buena parte de la protección contra XSS.",
+      "fix": "Quita `'unsafe-inline'`/`'unsafe-eval'` del `script-src`: mueve los scripts en línea a ficheros o usa nonces (`'nonce-…'`) o hashes, y limita los orígenes a dominios concretos."
+    },
+    "web.clickjacking": {
+      "title": "La web se puede incrustar en otra (clickjacking)",
+      "detail": "No hay X-Frame-Options ni `frame-ancestors`: otra web puede cargar esta dentro de un iframe invisible y engañar al usuario para que haga clic donde no quiere.",
+      "fix": "Añade `X-Frame-Options: SAMEORIGIN` y, en la CSP, `frame-ancestors 'self'`."
+    },
+    "web.nosniff_missing": {
+      "title": "Falta X-Content-Type-Options: nosniff",
+      "detail": "Sin esta cabecera, el navegador puede interpretar un fichero subido (una imagen, un texto) como script o HTML.",
+      "fix": "Añade `X-Content-Type-Options: nosniff` a todas las respuestas."
+    },
+    "web.referrer_missing": {
+      "title": "Falta Referrer-Policy",
+      "detail": "Sin política, la dirección completa de la página (que puede llevar tokens o datos en los parámetros) se envía a las webs externas enlazadas.",
+      "fix": "Añade `Referrer-Policy: strict-origin-when-cross-origin`."
+    },
+    "web.permissions_missing": {
+      "title": "Falta Permissions-Policy",
+      "detail": "No se limitan las funciones del navegador (cámara, micrófono, geolocalización…) que pueden usar la web y los iframes de terceros.",
+      "fix": "Añade, por ejemplo, `Permissions-Policy: camera=(), microphone=(), geolocation=()` (dejando solo lo que la web necesite)."
+    },
+    "web.server_version": {
+      "title": "El servidor dice su versión ({header})",
+      "detail": "La cabecera {header} muestra «{value}»: facilita saber qué vulnerabilidades conocidas probar.",
+      "fix": "Ocúltala. PHP: `expose_php = Off` en el php.ini. Apache: `ServerTokens Prod` y `ServerSignature Off`. Nginx: `server_tokens off;`. También se puede quitar con `Header unset X-Powered-By`. Y, sobre todo, comprueba que esa versión aún tiene soporte."
+    },
+    "web.cookie_flags": {
+      "title": "Cookie «{cookie}» sin {missing}",
+      "detail": "La cookie {cookie} no lleva {missing}. Secure evita que se envíe por HTTP; HttpOnly, que un script (XSS) la pueda leer; SameSite, que se envíe desde otras webs (CSRF).",
+      "fix": "Créala con `Secure; HttpOnly; SameSite=Lax` (o `Strict`). PHP: `session.cookie_secure=1`, `session.cookie_httponly=1`, `session.cookie_samesite=Lax`, o las opciones de `setcookie()`. Si es de un plugin o servicio externo, revisa su configuración."
+    },
+    "web.mixed_content": {
+      "title": "Contenido mixto: {count} recursos por HTTP",
+      "detail": "La página es HTTPS pero carga {count} recursos por HTTP. El navegador los bloquea o avisa, y un script cargado así podría modificarse por el camino.",
+      "fix": "Cambia esas direcciones a `https://` (o rutas relativas). En WordPress, revisa la URL del sitio y haz un buscar-y-reemplazar en la base de datos. Como red de seguridad, CSP `upgrade-insecure-requests`."
+    },
+    "web.sri_missing": {
+      "title": "{count} scripts externos sin integridad (SRI)",
+      "detail": "Se cargan scripts de otros dominios sin el atributo `integrity`: si ese servidor o CDN fuera comprometido, el código malicioso se ejecutaría en la web.",
+      "fix": "Añade `integrity=\"sha384-…\" crossorigin=\"anonymous\"` a los `<script>` de CDN con versión fija (srihash.org da el valor) o sirve los ficheros desde el mismo dominio."
+    },
+    "web.vcs_exposed": {
+      "title": "Repositorio git/svn público ({path})",
+      "detail": "Se puede descargar {path}: con herramientas automáticas se reconstruye todo el código fuente y el historial, incluidas contraseñas que se hayan escrito alguna vez.",
+      "fix": "Bloquea el acceso a las carpetas de control de versiones (Apache: `RedirectMatch 404 /\\.(git|svn|hg)`; Nginx: `location ~ /\\.(git|svn|hg) { deny all; }`) o, mejor, despliega sin la carpeta .git. Después cambia todas las contraseñas y claves que haya en el historial."
+    },
+    "web.env_exposed": {
+      "title": "Fichero de configuración .env público ({path})",
+      "detail": "Cualquiera puede descargar {path}, que suele tener las contraseñas de la base de datos, claves de API y la clave de la aplicación.",
+      "fix": "Bloquea los ficheros que empiezan por punto (Apache: `<FilesMatch \"^\\.\"> Require all denied </FilesMatch>`; Nginx: `location ~ /\\. { deny all; }`) y pon el document root en la carpeta public/. **Cambia ahora todas las credenciales** que haya: hay que considerarlas filtradas."
+    },
+    "web.config_backup": {
+      "title": "Copia de un fichero de configuración descargable ({path})",
+      "detail": "{path} es una copia de la configuración que el servidor no ejecuta como PHP y sirve como texto, con las contraseñas de la base de datos.",
+      "fix": "Bórrala del servidor, bloquea extensiones de copia (`.bak`, `.old`, `.save`, `~`, `.txt` de configuración) y cambia las credenciales que contenía."
+    },
+    "web.backup_exposed": {
+      "title": "Copia de seguridad descargable ({path})",
+      "detail": "Se puede descargar {path}, una copia de la web o de la base de datos (datos personales, usuarios, contraseñas).",
+      "fix": "Saca las copias del directorio público (guárdalas fuera del document root o en otro servicio) y revisa si hay más ficheros parecidos. Si contiene datos personales, valora si hay que notificarlo (RGPD)."
+    },
+    "web.ftp_config_exposed": {
+      "title": "Configuración de FTP/SFTP del editor pública ({path})",
+      "detail": "{path} es la configuración de subida del editor (VS Code/Sublime) y suele tener el servidor, el usuario y la contraseña de FTP/SFTP.",
+      "fix": "Bórrala del servidor, añádela al .gitignore y a las exclusiones de subida, y cambia la contraseña de FTP/SFTP."
+    },
+    "web.htpasswd_exposed": {
+      "title": "Fichero .htpasswd público",
+      "detail": "Se pueden descargar los usuarios y las contraseñas cifradas del acceso protegido; las débiles se pueden romper.",
+      "fix": "Mueve el .htpasswd fuera del document root (o bloquea `^\\.ht`) y cambia las contraseñas."
+    },
+    "web.adminer_exposed": {
+      "title": "Adminer accesible ({path})",
+      "detail": "Hay un gestor de bases de datos a la vista: es objetivo habitual de ataques de fuerza bruta y ha tenido vulnerabilidades graves.",
+      "fix": "Bórralo cuando no se use o protégelo con otra capa (IP permitidas, contraseña HTTP)."
+    },
+    "web.phpinfo_exposed": {
+      "title": "Página phpinfo() pública ({path})",
+      "detail": "{path} muestra la configuración entera de PHP y del servidor: rutas, versiones, módulos y a veces variables de entorno con secretos.",
+      "fix": "Borra el fichero."
+    },
+    "web.log_exposed": {
+      "title": "Fichero de registro público ({path})",
+      "detail": "{path} es un registro de errores descargable: revela rutas del servidor, consultas, versiones y a veces datos de usuarios.",
+      "fix": "Bórralo, guarda los registros fuera del document root (WordPress: `WP_DEBUG_LOG` con una ruta privada, o `WP_DEBUG` a false en producción) y bloquea `*.log`."
+    },
+    "web.server_status": {
+      "title": "Estado del servidor Apache público (/server-status)",
+      "detail": "Muestra en tiempo real las peticiones que recibe el servidor, con direcciones, IP de los visitantes y parámetros.",
+      "fix": "Limita `/server-status` a localhost (`Require local`) o desactiva mod_status."
+    },
+    "web.phpmyadmin_exposed": {
+      "title": "phpMyAdmin accesible ({path})",
+      "detail": "phpMyAdmin a la vista es un objetivo habitual de fuerza bruta y de vulnerabilidades.",
+      "fix": "Sácalo de la web pública o limítalo por IP / con una segunda contraseña HTTP."
+    },
+    "web.debug_mode": {
+      "title": "Herramienta de depuración en producción ({path})",
+      "detail": "{path} es una herramienta de desarrollo (perfilador o panel de depuración) que muestra peticiones, consultas, variables y a veces secretos.",
+      "fix": "Desactiva el modo de desarrollo en producción (Symfony: `APP_ENV=prod`; Laravel: `APP_DEBUG=false` y Telescope solo en local)."
+    },
+    "web.junk_files": {
+      "title": "Ficheros del ordenador del desarrollador publicados ({path})",
+      "detail": "{path} revela nombres de ficheros y carpetas internos del proyecto.",
+      "fix": "Bórralos, añádelos al .gitignore y a las exclusiones de subida."
+    },
+    "web.dir_listing": {
+      "title": "Listado de la carpeta {path} visible",
+      "detail": "El servidor enseña todos los ficheros de {path}: cualquiera puede ver y descargar documentos que no están enlazados.",
+      "fix": "Desactiva los listados: Apache `Options -Indexes` (en el .htaccess); Nginx `autoindex off;`. Revisa qué hay en la carpeta."
+    },
+    "web.cors_reflect": {
+      "title": "CORS acepta cualquier origen (credenciales: {credentials})",
+      "detail": "El servidor responde a cualquier web externa con Access-Control-Allow-Origin igual a su origen (Allow-Credentials: {credentials}). Si es «true», una web maliciosa puede leer datos del usuario con su sesión.",
+      "fix": "Responde solo a los orígenes de una lista blanca concreta y no uses `Access-Control-Allow-Credentials: true` con orígenes no fijos."
+    },
+    "web.reflected_input": {
+      "title": "La web devuelve lo que se escribe en la dirección sin escapar (posible XSS)",
+      "detail": "Un parámetro con comillas y `<` se ha devuelto tal cual dentro del HTML. Muy probablemente hay un XSS reflejado: un enlace preparado puede ejecutar código en el navegador de quien lo abra.",
+      "fix": "Escapa siempre la salida según el contexto (`htmlspecialchars($valor, ENT_QUOTES, 'UTF-8')` en PHP, `esc_html()`/`esc_attr()` en WordPress) y añade una CSP. Busca dónde se usa el parámetro en el código."
+    },
+    "web.error_disclosure": {
+      "title": "Mensajes de error internos visibles ({kind})",
+      "detail": "La web muestra errores internos ({kind}) a los visitantes: rutas, consultas SQL o trazas que ayudan a atacarla, y que pueden indicar una inyección.",
+      "fix": "En producción, `display_errors = Off` y `log_errors = On` (registro fuera de la web); desactiva el modo debug del framework. Si es un error SQL provocado por las comillas, revisa la consulta: probablemente no usa consultas preparadas."
+    },
+    "web.trace_enabled": {
+      "title": "Método TRACE activado",
+      "detail": "El servidor responde a TRACE devolviendo la petición, lo que combinado con otros fallos puede servir para robar cookies (XST).",
+      "fix": "Apache: `TraceEnable Off`. Nginx no lo soporta por defecto; revisa el proxy."
+    },
+    "web.cms_version": {
+      "title": "Se ve la versión de {cms} ({version})",
+      "detail": "La web dice que usa {cms} {version}. Si no es la última, tiene vulnerabilidades conocidas y públicas.",
+      "fix": "Actualiza {cms} a la última versión (y los plugins/temas) y oculta la versión (WordPress: quitar el meta generator y el readme.html)."
+    },
+    "web.wp_plugins": {
+      "title": "Plugins de WordPress detectados ({count})",
+      "detail": "Plugins visibles desde fuera: {plugins}.",
+      "fix": "Comprueba que todos están actualizados y sin vulnerabilidades conocidas (wpscan.com/plugins, patchstack.com/database) y borra los que no se usen."
+    },
+    "web.wp_xmlrpc": {
+      "title": "XML-RPC de WordPress activo",
+      "detail": "xmlrpc.php acepta peticiones: permite probar muchas contraseñas en una sola petición (system.multicall) y ataques de pingback.",
+      "fix": "Si no se usa (Jetpack, la app móvil), desactívalo: plugin, filtro `add_filter('xmlrpc_enabled', '__return_false');` o bloquea `xmlrpc.php` en el servidor."
+    },
+    "web.wp_user_enum": {
+      "title": "Se pueden listar los usuarios de WordPress",
+      "detail": "La API REST muestra los nombres de usuario ({users}): es la mitad del usuario y contraseña para un ataque de fuerza bruta.",
+      "fix": "Limita el endpoint `/wp-json/wp/v2/users` a usuarios identificados (filtro `rest_endpoints` o un plugin de seguridad), bloquea `?author=N` y activa el límite de intentos y el 2FA."
+    },
+    "web.security_txt": {
+      "title": "Falta security.txt",
+      "detail": "No hay /.well-known/security.txt, el fichero estándar (RFC 9116) donde quien encuentra una vulnerabilidad sabe a quién avisar.",
+      "fix": "Publica `/.well-known/security.txt` con al menos `Contact: mailto:seguridad@…` y `Expires: …`."
+    },
+    "web.robots_paths": {
+      "title": "El robots.txt señala rutas sensibles",
+      "detail": "El robots.txt lista rutas que parecen privadas ({paths}). No protege nada: solo lo anuncia.",
+      "fix": "No pongas rutas privadas en el robots.txt; protégelas con autenticación."
+    },
+    "web.js_vulnerable": {
+      "title": "{package} {version} tiene {count} vulnerabilidades conocidas",
+      "detail": "La web carga la librería JavaScript {package} {version}, con {count} vulnerabilidades publicadas (ver la prueba).",
+      "fix": "Actualiza {package} al menos a la {fixed} (mejor la última estable) y comprueba que la web sigue funcionando. Si la trae el tema o un plugin, actualízalo."
+    },
+    "code.sqli": {
+      "title": "Posible inyección SQL en {file}",
+      "detail": "Hay consultas SQL montadas concatenando variables ({count} líneas). Si alguna viene del usuario sin validar, puede leer o modificar toda la base de datos.",
+      "fix": "Usa consultas preparadas con parámetros (`?` o `:nombre`) para todos los valores; para nombres de columnas u orden, una lista blanca. No basta con escapar."
+    },
+    "code.cmd_injection": {
+      "title": "Posible ejecución de órdenes del sistema en {file}",
+      "detail": "Se ejecutan órdenes del sistema con variables ({count} líneas). Si alguna viene del usuario, puede ejecutar cualquier cosa en el servidor.",
+      "fix": "Evita el shell: usa funciones del lenguaje o pasa los argumentos como lista (proc_open con array, `spawn` sin `shell`, `subprocess.run([...])`). Si no hay alternativa, `escapeshellarg()` en cada argumento y lista blanca de valores."
+    },
+    "code.file_inclusion": {
+      "title": "Include/require con datos del usuario en {file}",
+      "detail": "Se carga un fichero PHP con un nombre que viene de la petición: puede permitir ejecutar código o leer ficheros del servidor.",
+      "fix": "No incluyas nunca rutas que vengan del usuario: usa una lista blanca (`match`/array de valores permitidos → fichero)."
+    },
+    "code.path_traversal": {
+      "title": "Acceso a ficheros con rutas del usuario en {file}",
+      "detail": "Se abren, leen o borran ficheros con una ruta que viene de la petición ({count} líneas): con `../` se puede llegar a cualquier fichero.",
+      "fix": "Usa identificadores en lugar de rutas, o `basename()` + `realpath()` y comprueba que el resultado está dentro de la carpeta permitida."
+    },
+    "code.unserialize": {
+      "title": "Deserialización insegura en {file}",
+      "detail": "Se deserializan datos ({count} líneas) con `unserialize`/`pickle`/`yaml.load`. Con datos de un atacante puede acabar ejecutando código.",
+      "fix": "Usa JSON (`json_decode`, `json.loads`). Si hace falta unserialize en PHP, `['allowed_classes' => false]`; en Python, `yaml.safe_load`."
+    },
+    "code.eval": {
+      "title": "Uso de eval o equivalente en {file}",
+      "detail": "Se ejecuta código construido en tiempo de ejecución ({count} líneas). Si entra cualquier dato externo, es ejecución de código remota.",
+      "fix": "Reescríbelo sin eval (mapas de funciones, JSON.parse, etc.)."
+    },
+    "code.xss": {
+      "title": "Posible XSS: salida sin escapar en {file}",
+      "detail": "Se muestran en la página datos sin escapar ({count} líneas), en algunos casos directamente de la petición. Puede permitir ejecutar scripts en el navegador de otros usuarios.",
+      "fix": "Escapa según el contexto: PHP `htmlspecialchars($v, ENT_QUOTES, 'UTF-8')` (o `esc_html`/`esc_attr` en WordPress); JavaScript `textContent` en lugar de `innerHTML`, o DOMPurify si hace falta HTML."
+    },
+    "code.open_redirect": {
+      "title": "Redirección abierta en {file}",
+      "detail": "Se redirige a una dirección que viene de la petición: se puede usar para enlaces de phishing que parecen de vuestra web.",
+      "fix": "Redirige solo a rutas internas (empieza por `/` y no por `//`) o a una lista blanca de dominios (`wp_safe_redirect` en WordPress)."
+    },
+    "code.mass_assignment": {
+      "title": "extract()/parse_str() con datos de la petición en {file}",
+      "detail": "Se convierten parámetros de la petición en variables: un atacante puede sobrescribir cualquier variable (permisos, rutas…).",
+      "fix": "Lee solo los campos que necesitas, explícitamente (`$_POST['nombre'] ?? ''`)."
+    },
+    "code.weak_password_hash": {
+      "title": "Contraseñas con un hash débil en {file}",
+      "detail": "Se usa MD5/SHA1/SHA256 para contraseñas: con una filtración, se rompen en minutos.",
+      "fix": "Usa `password_hash()` / `password_verify()` (bcrypt o Argon2) y migra los hashes antiguos en el siguiente inicio de sesión."
+    },
+    "code.upload": {
+      "title": "Subida de ficheros con el nombre original en {file}",
+      "detail": "Se guarda el fichero subido con el nombre que envía el usuario: puede subir un `.php` y ejecutarlo, o sobrescribir ficheros.",
+      "fix": "Genera tú el nombre (aleatorio), valida la extensión y el tipo real (finfo) contra una lista blanca y guárdalo fuera del document root o en una carpeta sin ejecución de PHP."
+    },
+    "code.weak_random": {
+      "title": "Aleatorio no seguro para tokens en {file}",
+      "detail": "Se generan tokens, contraseñas o códigos con `rand`/`mt_rand`/`uniqid`/`Math.random`, que son previsibles.",
+      "fix": "Usa `random_bytes()` / `random_int()` (PHP), `crypto.randomBytes`/`crypto.getRandomValues` (JS) o `secrets` (Python)."
+    },
+    "code.loose_compare": {
+      "title": "Comparación no estricta de tokens o hashes en {file}",
+      "detail": "Se comparan tokens, hashes o contraseñas con `==`: por las conversiones de tipo de PHP, valores distintos pueden parecer iguales, y el tiempo de respuesta puede filtrar el valor.",
+      "fix": "Usa `hash_equals()` para tokens y hashes y `password_verify()` para contraseñas."
+    },
+    "code.prototype_pollution": {
+      "title": "Posible contaminación de prototipos en {file}",
+      "detail": "Se asignan propiedades con claves que vienen de la petición: con `__proto__` se pueden alterar todos los objetos de la aplicación.",
+      "fix": "Rechaza las claves `__proto__`, `constructor` y `prototype`, o usa `Map`/`Object.create(null)`."
+    },
+    "code.debug_enabled": {
+      "title": "Modo de depuración activado en {file}",
+      "detail": "La configuración muestra errores o activa el modo debug: en producción revela información interna.",
+      "fix": "Desactívalo en producción (que dependa del entorno): `display_errors=Off`, `APP_DEBUG=false`, `DEBUG=False`."
+    },
+    "code.tls_verify_off": {
+      "title": "Conexiones HTTPS sin verificar el certificado en {file}",
+      "detail": "Se desactiva la verificación del certificado ({count} líneas): cualquiera puede hacerse pasar por el servidor remoto y leer o cambiar los datos (claves de API incluidas).",
+      "fix": "Quita las opciones que desactivan la verificación; si el problema era la cadena de certificados, configura el fichero de CA (`CURLOPT_CAINFO`) en lugar de desactivarla."
+    },
+    "code.cors_any": {
+      "title": "CORS abierto a cualquier origen en {file}",
+      "detail": "Se responde `Access-Control-Allow-Origin: *`: cualquier web puede leer esas respuestas desde el navegador de los usuarios.",
+      "fix": "Si la API es pública y sin datos privados, puede ser correcto; si no, limítalo a una lista de orígenes."
+    },
+    "code.secret": {
+      "title": "Clave o token ({kind}) escrito en el código en {file}",
+      "detail": "Hay una credencial real ({kind}) en el código. Todo el que tenga acceso al código o al repositorio (o a una copia filtrada) la puede usar.",
+      "fix": "Revócala y genera una nueva **ahora**, muévela a una variable de entorno o a un fichero de configuración fuera del repositorio (como `config.local.php` o `.env` en el .gitignore) y, si está en un repositorio, bórrala del historial (git filter-repo)."
+    },
+    "code.hardcoded_credential": {
+      "title": "Contraseña o clave escrita en el código en {file}",
+      "detail": "Hay credenciales escritas directamente ({count} líneas).",
+      "fix": "Muévelas a configuración fuera del repositorio (variables de entorno, `config.local.php` o `.env` ignorados por git) y cámbialas si el código se ha compartido."
+    },
+    "code.env_file": {
+      "title": "Fichero de secretos dentro del proyecto ({file})",
+      "detail": "{file} contiene contraseñas o claves y forma parte del código entregado (si está en el repositorio git, quedan en el historial).",
+      "fix": "Sácalo del repositorio (`git rm --cached`), añádelo al .gitignore, deja un `.env.example` sin valores y cambia las credenciales si el repositorio se ha compartido."
+    },
+    "code.dep_vulnerable": {
+      "title": "Dependencia vulnerable: {package} {version}",
+      "detail": "{package} {version} ({ecosystem}, en {file}) tiene {vulns} vulnerabilidades conocidas (ver la prueba).",
+      "fix": "Actualiza {package} al menos a la {fixed} (`composer update {package}` / `npm install {package}@latest` / `pip install -U {package}`), pasa los tests y vuelve a analizar."
+    }
   }
 }
